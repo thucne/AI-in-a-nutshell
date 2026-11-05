@@ -24,7 +24,7 @@ const gName = id => byGroup.get(id)?.label || id;
 const openButton = (id, text, cls='related-btn') => `<button class="${cls}" data-open="${esc(id)}">${esc(text)}</button>`;
 function setView(v){ activeTopic=null; location.hash='#'+v; if(location.hash==='#'+v) route(); }
 function parseHash(){ const [v, id] = location.hash.replace(/^#/,'').split('/'); return {v:['home','map','timeline','path','labs'].includes(v)?v:'home', id:byId.has(id)?id:null}; }
-function route(){ const parsed=parseHash(); view=parsed.v; activeTopic=parsed.id; render(); window.scrollTo({top:0,behavior:'instant'}); }
+function route(){ const parsed=parseHash(); const changePage=parsed.v!==view; view=parsed.v; activeTopic=parsed.id; render(); if(changePage)window.scrollTo({top:0,behavior:'instant'}); }
 function iconFor(v){return {home:'⌂',map:'◇',timeline:'◷',path:'↗',labs:'⌘'}[v]||'•'}
 function sidebar(){
  const menu=[['home','Tổng quan'],['map','Knowledge map'],['timeline','Lịch sử AI'],['path','Learning paths'],['labs','Playground']];
@@ -129,7 +129,7 @@ function topicDrawer(){
     '</section>';
 }
 
-function render(){document.documentElement.dataset.theme=theme;const pages={home,map:mapPage,timeline:timelinePage,path:pathPage,labs:labsPage};document.body.style.overflow=activeTopic?'hidden':'';app.innerHTML=`<div class="app-shell">${sidebar()}<div class="main-area">${header()}<main class="content">${(pages[view]||home)()}</main></div></div>${topicDrawer()}`;}
+function render(){document.documentElement.dataset.theme=theme;const pages={home,map:mapPage,timeline:timelinePage,path:pathPage,labs:labsPage};document.body.style.overflow=activeTopic?'hidden':'';app.innerHTML=`<div class="app-shell" ${activeTopic?'inert':''}>${sidebar()}<div class="main-area">${header()}<main class="content">${(pages[view]||home)()}</main></div></div>${topicDrawer()}`;if(activeTopic){document.querySelector('.reader-modal .close')?.focus({preventScroll:true});syncReaderPosition();}}
 function updateLab(){const a=document.getElementById('agent-stage-ui');if(a)a.innerHTML=agentLab();}
 function updateMapResults(){const m=document.getElementById('map-results');if(m)m.innerHTML=mapResults();const f=document.getElementById('filter-row');if(f)f.innerHTML=filters();}
 document.addEventListener('click',e=>{
@@ -145,7 +145,7 @@ document.addEventListener('click',e=>{
  }
  if(b.hasAttribute('data-nav')){setView(b.dataset.nav);return;}
  if(b.hasAttribute('data-open')){const h='#'+view+'/'+b.dataset.open;if(location.hash===h)route();else location.hash=h;return;}
- if(b.hasAttribute('data-close')){setView(view);return;}
+ if(b.hasAttribute('data-close')){const last=activeTopic;setView(view);if(last){const opener=[...document.querySelectorAll('[data-open]')].find(x=>x.dataset.open===last);opener?.focus({preventScroll:true});}return;}
  if(b.hasAttribute('data-group')){filter=b.dataset.group;search='';setView('map');return;}
  if(b.hasAttribute('data-filter')){filter=b.dataset.filter;updateMapResults();return;}
  if(b.hasAttribute('data-clear-search')){search='';filter='all';const input=document.getElementById('topic-search');if(input)input.value='';updateMapResults();return;}
@@ -176,7 +176,20 @@ function syncReaderPosition(){
 }
 document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('reader-scroll'))syncReaderPosition();},true);
 document.addEventListener('input',e=>{if(e.target.id==='topic-search'){search=e.target.value;updateMapResults();}if(e.target.id==='temp-slider'){temperature=Number(e.target.value);const label=document.getElementById('temp-label');if(label)label.textContent=temperature.toFixed(1);const bars=document.getElementById('sampling-bars');if(bars)bars.innerHTML=renderSamplingBars(softmax([2,1,.1,-.45],temperature));}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeTopic){setView(view);}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();activeTopic=null;filter='all';setView('map');document.getElementById('topic-search')?.focus();}});
+document.addEventListener('keydown',e=>{
+ if(activeTopic&&e.key==='Tab'){
+   const modal=document.querySelector('.reader-modal');
+   const focusable=modal?[...modal.querySelectorAll('button:not([disabled]),a[href],input:not([disabled])')].filter(x=>x.getClientRects().length):[];
+   if(focusable.length){
+     const first=focusable[0],last=focusable[focusable.length-1];
+     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+     else if(!modal.contains(document.activeElement)){e.preventDefault();first.focus();}
+   }
+ }
+ if(e.key==='Escape'&&activeTopic){const last=activeTopic;setView(view);const opener=[...document.querySelectorAll('[data-open]')].find(x=>x.dataset.open===last);opener?.focus({preventScroll:true});}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();activeTopic=null;filter='all';setView('map');document.getElementById('topic-search')?.focus();}
+});
 window.addEventListener('hashchange',route);
 route();
 })();
