@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Bản đồ AI tương tác: lịch sử, cơ chế LLM, quá trình training và kiến trúc AI agents dành cho developer." />
+  <title>AI Atlas — Learn the systems behind intelligence</title>
+  <style>
+:root{--bg:#0b1017;--panel:#121922;--panel2:#161f2a;--panel3:#1c2833;--line:#2b3643;--muted:#8e9aaa;--text:#e8eced;--heading:#f7f9f7;--lime:#b5f1a2;--lime2:#7ed993;--purple:#c9b6ff;--amber:#f8c88b;--glow:rgba(181,241,162,.08);--shadow:0 18px 80px rgba(0,0,0,.26)}
+:root[data-theme="light"]{--bg:#f3f5f4;--panel:#fff;--panel2:#f8faf9;--panel3:#e9f0ec;--line:#d9e1dc;--muted:#68776e;--text:#293a30;--heading:#14251a;--lime:#2b7f4e;--lime2:#177948;--purple:#6754a1;--amber:#946229;--glow:rgba(42,122,72,.06);--shadow:0 18px 80px rgba(38,67,49,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:3px}::selection{background:var(--lime);color:var(--bg)}
+.app-shell{min-height:100vh;display:grid;grid-template-columns:260px minmax(0,1fr)}.sidebar{border-right:1px solid var(--line);height:100vh;position:sticky;top:0;display:flex;flex-direction:column;background:var(--panel);z-index:3}.side-brand{padding:29px 22px 21px;border-bottom:1px solid var(--line)}.brand-row{display:flex;gap:12px;align-items:center}.brand-logo{font-size:30px;line-height:1;background:var(--lime);color:var(--bg);width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800}.brand-title{font-weight:800;letter-spacing:-.6px;font-size:19px;color:var(--heading)}.tiny-caps{font-size:10px;text-transform:uppercase;letter-spacing:2.1px;font-weight:800;color:var(--muted)}.side-brand p{font-size:12px;margin:12px 0 0;color:var(--muted);line-height:1.6}.sidebar-scroller{overflow:auto;padding:22px 11px 20px;flex:1}.side-caption{padding:0 12px 8px;margin-top:7px}.side-link,.side-node{width:100%;display:flex;align-items:center;gap:10px;border:1px solid transparent;text-align:left;color:var(--muted);background:transparent;border-radius:10px;padding:10px 12px;transition:.15s}.side-link:hover,.side-node:hover{color:var(--heading);background:var(--panel2)}.side-link.active{background:var(--glow);border-color:rgba(160,220,162,.23);color:var(--lime)}.side-link .sym{width:20px;text-align:center;font-size:16px}.side-link .arrow{margin-left:auto;opacity:.5}.side-divider{height:1px;background:var(--line);margin:18px 11px}.side-node{font-size:12.5px;padding:8px 11px;gap:9px}.side-node .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}.side-node .count{margin-left:auto;font-size:11px;opacity:.65}.side-bottom{padding:16px 20px;border-top:1px solid var(--line)}.small-progress{height:5px;background:var(--panel3);border-radius:9px;overflow:hidden;margin-top:12px}.small-progress div{height:100%;background:var(--lime);border-radius:inherit}.side-progress-top{display:flex;justify-content:space-between;align-items:center;font-size:12px}.side-progress-top strong{color:var(--lime)}
+.main-area{min-width:0}.topbar{height:76px;padding:0 42px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2;background:var(--bg)}.breadcrumbs{font-size:12px;letter-spacing:.04em;color:var(--muted)}.breadcrumbs strong{color:var(--text);font-weight:700}.top-actions{display:flex;align-items:center;gap:16px}.icon-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:7px 11px;white-space:nowrap}.icon-btn:hover{color:var(--lime);border-color:var(--lime)}.kbd{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:2px 5px;border-radius:4px;margin-left:7px}.content{max-width:1350px;padding:42px 48px 80px;margin:0 auto}.eyebrow{color:var(--lime);font-weight:800;text-transform:uppercase;letter-spacing:2.5px;font-size:11px}.display{color:var(--heading);font-weight:800;letter-spacing:-2.6px;line-height:1.08;font-size:clamp(39px,5vw,69px);margin:13px 0 19px}.display em{font-style:normal;color:var(--lime)}.intro{max-width:670px;font-size:17px;color:var(--muted);line-height:1.8;margin:0}.hero{padding:43px 0 44px;display:grid;grid-template-columns:1.15fr .85fr;gap:55px;align-items:center}.hero-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:28px}.btn{border:0;background:var(--lime);color:var(--bg);font-weight:800;border-radius:11px;padding:12px 18px;display:inline-flex;gap:9px;align-items:center}.btn:hover{filter:brightness(.94)}.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn.small{font-size:12px;padding:9px 12px}.hero-visual{border:1px solid var(--line);background:linear-gradient(145deg,var(--panel2),var(--panel));padding:26px;position:relative;border-radius:20px;box-shadow:var(--shadow);min-height:320px}.hero-visual:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 75% 4%,rgba(160,240,179,.13),transparent 55%);pointer-events:none}.terminal-title{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:15px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px}.terminal-dots span{display:inline-block;width:7px;height:7px;background:var(--line);border-radius:50%;margin-right:4px}.pipeline{margin-top:22px;display:flex;flex-direction:column;align-items:center}.pipeline-node{width:85%;background:var(--panel3);border:1px solid var(--line);text-align:center;padding:12px 12px;border-radius:10px;font-size:13px;position:relative}.pipeline-node b{font-weight:750;color:var(--heading)}.pipeline-node small{font-size:11px;color:var(--muted);display:block;margin-top:2px}.pipeline-node.glow{border-color:var(--lime);box-shadow:0 0 25px var(--glow)}.pipeline-arrow{color:var(--lime);font-size:17px;line-height:1.4}.mini-label{font:700 10px/1.3 ui-monospace,monospace;color:var(--lime);letter-spacing:.5px}
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:18px 0 42px}.metric{padding:21px 23px;background:var(--panel);border:1px solid var(--line);border-radius:14px}.metric .value{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--heading)}.metric .detail{font-size:12px;color:var(--muted);margin-top:5px}.section-head{display:flex;justify-content:space-between;align-items:end;margin:43px 0 20px;gap:15px}.section-head h2{font-size:24px;color:var(--heading);letter-spacing:-.6px;margin:4px 0}.section-head p{color:var(--muted);font-size:13px;margin:3px 0}.section-kicker{font-size:10px;letter-spacing:2px;color:var(--lime);text-transform:uppercase;font-weight:800}.learn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.learn-card{border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:23px;display:flex;flex-direction:column;min-height:216px;transition:.15s}.learn-card:hover{transform:translateY(-3px);border-color:var(--muted)}.learn-card .glyph{font-size:28px;line-height:1;color:var(--lime)}.learn-card h3{font-size:17px;line-height:1.45;color:var(--heading);margin:18px 0 7px}.learn-card p{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 15px}.learn-card .go{color:var(--lime);font-size:12px;font-weight:750;margin-top:auto}.flow-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}.flow-step{border:1px solid var(--line);background:var(--panel);padding:18px 12px;text-align:center;border-radius:12px;position:relative}.flow-step:not(:last-child):after{content:'→';position:absolute;right:-13px;top:35%;color:var(--lime);font-weight:800;z-index:1}.flow-step .big{font-size:20px;color:var(--lime);font-weight:800}.flow-step b{display:block;font-size:12px;color:var(--heading);margin-top:3px}.flow-step span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.notice{border:1px solid var(--line);border-left:3px solid var(--lime);border-radius:10px;padding:17px 20px;margin-top:30px;background:var(--panel);color:var(--muted);font-size:13px}.notice strong{color:var(--heading)}
+.page-title{font-size:clamp(32px,4vw,44px);line-height:1.14;letter-spacing:-1.6px;color:var(--heading);margin:9px 0 12px}.page-subtitle{color:var(--muted);margin:0;max-width:740px}.tools-row{display:flex;flex-wrap:wrap;align-items:center;gap:11px;margin:28px 0 15px}.search{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 15px}.search:focus-within{border-color:var(--lime)}.search span{color:var(--lime);font-size:20px}.search input{width:100%;border:0;outline:0;background:transparent;color:var(--heading);padding:13px 0;font-size:13px}.search input::placeholder{color:var(--muted)}.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 24px}.chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:50px;padding:7px 13px;font-size:12px}.chip.active{background:var(--glow);color:var(--lime);border-color:var(--lime)}.chip:hover{color:var(--heading)}.map-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}.branch{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:18px;min-width:0}.branch-head{display:flex;gap:12px;align-items:center;padding-bottom:17px;border-bottom:1px solid var(--line);margin-bottom:17px}.branch-icon{height:42px;width:42px;border-radius:10px;display:grid;place-items:center;font-size:22px;background:var(--panel3)}.branch-head h3{color:var(--heading);font-size:14px;line-height:1.3;margin:0 0 3px}.branch-head p{font-size:11px;color:var(--muted);margin:0;line-height:1.4}.node-list{padding-left:15px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:8px}.node{margin-left:0;text-align:left;width:100%;padding:11px 13px;position:relative;color:var(--text);border:1px solid var(--line);background:var(--panel2);border-radius:9px;transition:.16s}.node:before{content:'';width:15px;height:1px;position:absolute;background:var(--line);left:-16px;top:24px}.node:hover{border-color:var(--lime);transform:translateX(2px)}.node-title{font-size:12.5px;font-weight:750;line-height:1.4;color:var(--heading);display:block}.node-sub{font-size:10.5px;color:var(--muted);margin-top:4px;display:block;line-height:1.4}.node-meta{display:flex;align-items:center;gap:7px;margin-top:8px;color:var(--muted);font-size:10px}.level-dot{height:6px;width:6px;display:inline-block;border-radius:100%;background:var(--lime)}.node.is-done{border-color:rgba(151,224,157,.4)}.done-icon{float:right;color:var(--lime);font-weight:900}.result-count{font-size:12px;color:var(--muted);margin-bottom:12px}.empty{padding:60px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+.timeline{position:relative;margin-top:30px;padding-left:26px}.timeline:before{content:'';position:absolute;left:10px;top:14px;bottom:14px;width:2px;background:var(--line)}.time-card{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;margin-bottom:12px;padding:19px 22px;display:grid;grid-template-columns:95px minmax(0,1fr) auto;gap:15px;align-items:center}.time-card:before{content:'';position:absolute;left:-23px;top:30px;width:10px;height:10px;background:var(--bg);border:2px solid var(--lime);border-radius:50%}.time-year{font-weight:800;color:var(--lime);font-size:20px;letter-spacing:-.5px}.time-title{margin:0;color:var(--heading);font-size:15px;font-weight:750}.time-desc{font-size:12px;color:var(--muted);margin:4px 0 0}.time-tag{border:1px solid var(--line);border-radius:7px;padding:4px 7px;font-size:10px;color:var(--muted);white-space:nowrap}.link-button{background:transparent;border:0;color:var(--lime);font-weight:750;padding:0;font-size:12px}
+.track-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:26px 0}.track-card{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:left;position:relative}.track-card.active{border-color:var(--lime);background:var(--glow)}.track-card .badge-track{font-size:11px;color:var(--lime);font-weight:800}.track-card h3{margin:9px 0 6px;font-size:17px;color:var(--heading)}.track-card p{font-size:12px;color:var(--muted);min-height:42px;margin:0}.track-card .track-time{font-size:11px;margin-top:14px;color:var(--muted)}.track-list{max-width:900px;display:flex;flex-direction:column;gap:9px;margin-top:22px}.track-step{display:flex;gap:15px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 17px}.track-num{border-radius:9px;border:1px solid var(--line);background:var(--panel2);width:38px;height:38px;display:grid;place-items:center;font-weight:800;color:var(--muted);flex:none}.track-step.done .track-num{color:var(--bg);background:var(--lime);border-color:var(--lime)}.track-step .track-body{flex:1;min-width:0}.track-step .track-body b{font-size:13px;color:var(--heading)}.track-step .track-body span{display:block;color:var(--muted);font-size:11px}.track-step .track-view{border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--text);padding:7px 11px;font-size:11px}.track-step .track-view:hover{border-color:var(--lime);color:var(--lime)}.track-heading{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.track-heading strong{color:var(--heading)}.track-heading span{font-size:12px;color:var(--muted)}
+.lab-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:25px}.lab-card{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:23px}.lab-card h3{font-size:18px;color:var(--heading);margin:6px 0 8px}.lab-card p{font-size:12px;color:var(--muted);margin:0 0 20px}.lab-card .mini-label{margin-bottom:3px;display:block}.slider-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text)}.slider-top strong{color:var(--lime);font-size:18px}.temperature-slider{width:100%;margin:18px 0 22px;accent-color:var(--lime)}.bar-row{display:grid;grid-template-columns:80px 1fr 50px;gap:10px;align-items:center;font-size:12px;margin:10px 0}.bar-track{height:17px;border-radius:5px;background:var(--panel3);overflow:hidden}.bar-fill{height:100%;border-radius:5px;background:var(--lime);transition:width .15s}.bar-pct{color:var(--muted);font:12px ui-monospace,monospace;text-align:right}.lab-small{font-size:11px;color:var(--muted);line-height:1.6;margin-top:15px}.token-buttons{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}.token-choice{font-size:12px;padding:8px 13px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:8px}.token-choice.active{color:var(--lime);border-color:var(--lime)}.agent-lab{margin-top:18px;border-top:1px solid var(--line);padding-top:19px}.agent-stage{border:1px solid var(--line);border-radius:11px;padding:16px;background:var(--panel2);min-height:112px}.agent-stage small{color:var(--lime);font-weight:800;letter-spacing:1px}.agent-stage b{color:var(--heading);display:block;font-size:14px;margin-top:5px}.agent-stage p{margin:4px 0 0;color:var(--muted);font-size:12px}.step-dots{display:flex;gap:7px;margin:14px 0}.step-dots span{flex:1;height:5px;border-radius:6px;background:var(--line)}.step-dots span.passed{background:var(--lime)}.lab-actions{display:flex;gap:8px}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:9;animation:fade .15s}.drawer{position:fixed;right:0;top:0;bottom:0;z-index:10;width:min(640px,100vw);background:var(--panel);border-left:1px solid var(--line);overflow:auto;box-shadow:var(--shadow);animation:slide .18s ease-out}.drawer-top{display:flex;justify-content:space-between;align-items:center;padding:19px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2;background:var(--panel)}.drawer-top .close{font-size:22px;border:1px solid var(--line);background:var(--panel2);color:var(--text);width:36px;height:36px;border-radius:9px}.reader{padding:30px 34px 70px}.reader h2{font-size:clamp(26px,3vw,37px);letter-spacing:-1.3px;line-height:1.2;color:var(--heading);margin:15px 0 12px}.reader-lead{color:var(--muted);font-size:15px;line-height:1.8;margin:0 0 19px}.reader-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.pill{border:1px solid var(--line);padding:5px 10px;border-radius:20px;background:var(--panel2)}.reader-section{margin-top:27px;padding-top:23px;border-top:1px solid var(--line)}.reader-section h3{color:var(--heading);font-size:15px;margin:0 0 9px}.reader-section p{color:var(--text);line-height:1.8;font-size:13.5px;margin:0}.reader-section .muted{color:var(--muted)}.reader-example{margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:16px 18px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.8;color:var(--lime);white-space:pre-wrap}.reader-callout{background:var(--glow);border-left:3px solid var(--amber);border-radius:8px;padding:14px 17px;margin-top:8px;font-size:13px}.reader-callout strong{color:var(--amber)}.reader-links{display:flex;gap:8px;flex-wrap:wrap}.related-btn{font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:8px 11px}.related-btn:hover{border-color:var(--lime);color:var(--lime)}.source-link{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);text-decoration:none;font-size:12px}.source-link:hover{color:var(--lime)}.mark-btn{width:100%;margin-top:26px;justify-content:center}.footer{margin-top:65px;border-top:1px solid var(--line);padding-top:22px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:10px}.footer a{color:var(--lime)}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes slide{from{transform:translateX(24px);opacity:.6}to{transform:translateX(0);opacity:1}}
+@media(max-width:1250px){.map-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:35px 32px 70px}.topbar{padding:0 32px}.hero{gap:24px}}
+@media(max-width:980px){.app-shell{grid-template-columns:76px minmax(0,1fr)}.sidebar{align-items:stretch}.side-brand{padding:20px 16px}.side-brand .brand-row{justify-content:center}.brand-title,.side-brand p,.side-caption,.side-divider,.side-node,.side-progress-top,.small-progress,.side-bottom,.side-link .link-text,.side-link .arrow{display:none!important}.sidebar-scroller{padding:17px 8px}.side-link{padding:12px;justify-content:center}.side-link .sym{font-size:20px;width:auto}.hero{grid-template-columns:1fr}.hero-visual{max-width:580px;min-height:auto}.metric-row{grid-template-columns:repeat(2,1fr)}.learn-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.app-shell{display:block}.sidebar{height:auto;position:sticky;top:0;border-right:0;border-bottom:1px solid var(--line);display:block}.side-brand{display:none}.sidebar-scroller{display:flex;overflow:auto;padding:7px 9px;gap:5px}.side-link{min-width:42px;padding:9px 12px}.side-link .link-text{display:inline!important;font-size:10px}.side-link .sym{font-size:13px}.sidebar-scroller>div.side-caption,.sidebar-scroller>.side-divider,.sidebar-scroller>.side-node{display:none}.topbar{height:50px;padding:0 18px;position:static}.topbar .kbd{display:none}.content{padding:25px 18px 50px}.display{letter-spacing:-1.6px}.hero{padding:22px 0 20px;gap:28px}.hero-visual{padding:18px}.metric-row{gap:8px;margin:15px 0 24px}.metric{padding:14px}.metric .value{font-size:24px}.learn-grid,.map-grid,.track-grid,.lab-grid{grid-template-columns:1fr}.flow-strip{grid-template-columns:1fr 1fr;gap:8px}.flow-step:not(:last-child):after{display:none}.time-card{grid-template-columns:70px 1fr;gap:12px;padding:14px}.time-tag{grid-column:2;justify-self:start}.time-year{font-size:15px}.track-step{padding:11px}.reader{padding:24px 19px 55px}.drawer-top{padding:12px 18px}.footer{flex-direction:column}}
+
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+/* Add or edit topics below. Pure data; no build tool required. */
+window.AI_ATLAS_DATA = {
+  "version": "1.0.0",
+  "updated": "2026-11-05",
+  "groups": [
+    {
+      "id": "history",
+      "label": "01 / Lịch sử AI",
+      "subtitle": "Tại sao lĩnh vực này phát triển như hôm nay?",
+      "icon": "◷",
+      "color": "#f4c77c",
+      "order": 0
+    },
+    {
+      "id": "foundations",
+      "label": "02 / Nền tảng học máy",
+      "subtitle": "Tư duy toán & cách máy học từ dữ liệu",
+      "icon": "∑",
+      "color": "#a9c9ff",
+      "order": 1
+    },
+    {
+      "id": "llm",
+      "label": "03 / Bên trong LLM",
+      "subtitle": "Một token đi qua mô hình như thế nào?",
+      "icon": "◇",
+      "color": "#c4aeff",
+      "order": 2
+    },
+    {
+      "id": "training",
+      "label": "04 / Huấn luyện & tối ưu",
+      "subtitle": "Weights được học và điều chỉnh ra sao?",
+      "icon": "↗",
+      "color": "#f6acb8",
+      "order": 3
+    },
+    {
+      "id": "agents",
+      "label": "05 / LLM application & Agent",
+      "subtitle": "Từ model đến hệ thống biết sử dụng công cụ",
+      "icon": "⌘",
+      "color": "#a8ead8",
+      "order": 4
+    },
+    {
+      "id": "frontier",
+      "label": "06 / Mở rộng góc nhìn",
+      "subtitle": "Multimodal, MoE và những câu hỏi còn mở",
+      "icon": "✦",
+      "color": "#f0dd91",
+      "order": 5
+    }
+  ],
+  "topics": [
+    {
+      "id": "ai-history",
+      "group": "history",
+      "title": "AI không phải một dòng tiến hóa thẳng",
+      "level": "Nhập môn",
+      "minutes": 8,
+      "summary": "Ba nhánh chính đan xen: symbolic AI, thống kê và neural networks.",
+      "why": "Lịch sử giúp hiểu tại sao một kỹ thuật xuất hiện, và vì sao điều “mới” thường xây trên ý tưởng cũ.",
+      "how": "Symbolic AI biểu diễn tri thức bằng quy tắc; thống kê học phân phối từ dữ liệu; connectionism xây mạng nhiều đơn vị đơn giản. Các nhánh cùng tồn tại và vay mượn ý tưởng của nhau.",
+      "example": "Một hệ thống search có thể kết hợp logic filter + ranking ML + LLM tóm tắt.",
+      "misconception": "Không phải toàn bộ AI trước năm 2017 đều “thất bại”; nhiều nhánh vẫn rất hữu dụng.",
+      "prerequisites": [],
+      "related": [
+        "symbolic",
+        "statistical-ml",
+        "deep-learning"
+      ],
+      "sources": [
+        {
+          "label": "HISTORY",
+          "url": "https://www.ll.mit.edu/sites/default/files/publication/doc/2022-10/Artificial%20Intelligence%20Short%20History%2C%20Present%20Developments%2C%20and%20Future%20Outlook%20-%20Final%20Report%20-%20Martinez_.pdf"
+        },
+        {
+          "label": "DARTMOUTH",
+          "url": "https://home.dartmouth.edu/about/artificial-intelligence-ai-coined-dartmouth"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "symbolic",
+      "group": "history",
+      "title": "1950s–1970s · Symbolic AI",
+      "level": "Nhập môn",
+      "minutes": 9,
+      "summary": "Logic, search, biểu diễn tri thức và luật IF–THEN.",
+      "why": "Từ thập niên 1950, mục tiêu là mô hình hóa suy luận bằng phép biến đổi ký hiệu rõ ràng.",
+      "how": "State-space search, heuristic search, theorem proving và knowledge representation giúp giải bài toán có cấu trúc. AI được xác lập thành lĩnh vực nghiên cứu tại Dartmouth năm 1956.",
+      "example": "Chess engine truyền thống dùng tìm kiếm nước đi và hàm đánh giá; expert system dùng rule base + inference engine.",
+      "misconception": "AI không đồng nghĩa với deep learning hay chatbot.",
+      "prerequisites": [
+        "ai-history"
+      ],
+      "related": [
+        "expert-systems"
+      ],
+      "sources": [
+        {
+          "label": "DARTMOUTH",
+          "url": "https://home.dartmouth.edu/about/artificial-intelligence-ai-coined-dartmouth"
+        },
+        {
+          "label": "HISTORY",
+          "url": "https://www.ll.mit.edu/sites/default/files/publication/doc/2022-10/Artificial%20Intelligence%20Short%20History%2C%20Present%20Developments%2C%20and%20Future%20Outlook%20-%20Final%20Report%20-%20Martinez_.pdf"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "expert-systems",
+      "group": "history",
+      "title": "1970s–1980s · Expert systems & AI winters",
+      "level": "Nhập môn",
+      "minutes": 8,
+      "summary": "Bùng nổ rule-based systems, rồi gặp giới hạn mở rộng và duy trì.",
+      "why": "Expert systems cho thấy encode kiến thức chuyên gia có thể tạo giá trị, nhưng công sức duy trì luật rất đắt.",
+      "how": "Knowledge engineer thu thập quy tắc, inference engine áp dụng chúng. Hệ thống khó xử lý ngoại lệ và common sense; các chu kỳ kỳ vọng vượt năng lực thực tế dẫn đến giai đoạn cắt giảm đầu tư (“AI winters”).",
+      "example": "Rule “nếu triệu chứng A + B thì gợi ý C” không tự khái quát tốt khi gặp mẫu mới.",
+      "misconception": "“AI winter” là giai đoạn giảm kỳ vọng/đầu tư, không phải AI ngừng nghiên cứu.",
+      "prerequisites": [
+        "symbolic"
+      ],
+      "related": [
+        "statistical-ml"
+      ],
+      "sources": [
+        {
+          "label": "HISTORY",
+          "url": "https://www.ll.mit.edu/sites/default/files/publication/doc/2022-10/Artificial%20Intelligence%20Short%20History%2C%20Present%20Developments%2C%20and%20Future%20Outlook%20-%20Final%20Report%20-%20Martinez_.pdf"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "statistical-ml",
+      "group": "history",
+      "title": "1990s–2000s · Statistical ML",
+      "level": "Nhập môn",
+      "minutes": 9,
+      "summary": "Học từ dữ liệu thay vì viết hết luật.",
+      "why": "Khi dữ liệu tăng, thống kê và ML trở thành cách hiệu quả để xử lý nhiễu và bất định.",
+      "how": "Regression, decision tree, SVM, probabilistic models và feature engineering học ranh giới quyết định từ ví dụ; kết hợp đánh giá trên tập dữ liệu chưa thấy.",
+      "example": "Spam filter học từ email gắn nhãn thay vì duy trì hàng nghìn luật thủ công.",
+      "misconception": "“ML” không chỉ là neural network; mô hình tuyến tính và cây vẫn rất mạnh.",
+      "prerequisites": [
+        "ai-history"
+      ],
+      "related": [
+        "supervised",
+        "deep-learning"
+      ],
+      "sources": [
+        {
+          "label": "HISTORY",
+          "url": "https://www.ll.mit.edu/sites/default/files/publication/doc/2022-10/Artificial%20Intelligence%20Short%20History%2C%20Present%20Developments%2C%20and%20Future%20Outlook%20-%20Final%20Report%20-%20Martinez_.pdf"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "deep-learning",
+      "group": "history",
+      "title": "2012–2016 · Deep learning bứt phá",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Nhiều lớp mạng học features và GPU giúp huấn luyện ở quy mô lớn.",
+      "why": "AlexNet (2012) là cột mốc quan trọng cho computer vision hiện đại; AlphaGo (2016) kết hợp deep learning, search và RL.",
+      "how": "Backpropagation, dữ liệu lớn, GPU, kiến trúc CNN/RNN giúp mô hình học biểu diễn qua nhiều tầng thay vì chỉ feature thủ công.",
+      "example": "CNN lớp đầu học cạnh, lớp sau học texture/hình dạng — chỉ là trực giác, không phải mỗi neuron có một nhãn cố định.",
+      "misconception": "Deep learning không bắt đầu năm 2012; nhiều nền tảng đã có từ thập niên 1980 và trước đó.",
+      "prerequisites": [
+        "statistical-ml",
+        "neural-network"
+      ],
+      "related": [
+        "transformer",
+        "gradient"
+      ],
+      "sources": [
+        {
+          "label": "ALEXNET",
+          "url": "https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks"
+        },
+        {
+          "label": "ALPHAGO",
+          "url": "https://www.nature.com/articles/nature16961"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "transformer-era",
+      "group": "history",
+      "title": "2017–nay · Transformer, LLM, Agent",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Transformer tăng khả năng song song hóa và mở đường cho scaling LLM.",
+      "why": "2017 có Transformer; những năm sau pretraining quy mô lớn, instruction tuning, chat interface, retrieval và tool use biến model thành hệ thống hữu dụng.",
+      "how": "Mốc nổi bật: Transformer (2017), BERT/GPT (2018), GPT-3 (2020), InstructGPT/ChatGPT (2022), agentic workflows phát triển mạnh tiếp theo. Đây là chuỗi mốc chọn lọc, không đại diện mọi lĩnh vực AI.",
+      "example": "Coding agent kết hợp model, context repo, terminal, test runner, git và vòng lặp sửa lỗi.",
+      "misconception": "Agent không phải kiến trúc model mới; phần lớn là hệ thống điều phối quanh model.",
+      "prerequisites": [
+        "deep-learning"
+      ],
+      "related": [
+        "transformer",
+        "pretraining",
+        "agent-loop"
+      ],
+      "sources": [
+        {
+          "label": "TRANSFORMER",
+          "url": "https://research.google/pubs/attention-is-all-you-need/"
+        },
+        {
+          "label": "BERT",
+          "url": "https://arxiv.org/abs/1810.04805"
+        },
+        {
+          "label": "GPT3",
+          "url": "https://arxiv.org/abs/2005.14165"
+        },
+        {
+          "label": "AGENTS",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "ai-vs-ml",
+      "group": "foundations",
+      "title": "AI vs ML vs DL vs LLM",
+      "level": "Nhập môn",
+      "minutes": 7,
+      "summary": "Bốn khái niệm ở các mức trừu tượng khác nhau.",
+      "why": "Đây là la bàn để không gộp mọi sản phẩm AI vào cùng một loại.",
+      "how": "AI = mục tiêu xây hệ thống thể hiện năng lực thông minh; ML = nhóm phương pháp học từ dữ liệu; deep learning = ML dùng mạng nhiều tầng; LLM = model ngôn ngữ lớn thường dựa trên transformer. Agent là kiến trúc hệ thống, không phải tầng thứ năm trong một sơ đồ bao hàm đơn giản.",
+      "example": "Pathfinding A* thuộc AI nhưng không nhất thiết là ML; GPT là LLM; Codex-like agent kết hợp LLM và tool.",
+      "misconception": "AI ⊃ ML ⊃ deep learning có ích để định hướng, nhưng không diễn tả tất cả giao thoa.",
+      "prerequisites": [],
+      "related": [
+        "supervised",
+        "neural-network",
+        "agent-loop"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "supervised",
+      "group": "foundations",
+      "title": "Supervised, self-supervised & RL",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Ba cách xây tín hiệu học khác nhau.",
+      "why": "Hiểu mục tiêu tối ưu sẽ giúp bạn đọc paper và hiểu training pipeline.",
+      "how": "Supervised: học từ (input,label). Self-supervised: tạo mục tiêu học từ dữ liệu gốc, chẳng hạn dự đoán token kế tiếp. Reinforcement learning: policy nhận reward từ tương tác/trải nghiệm; thực tế có nhiều biến thể.",
+      "example": "Email spam: label spam/ham; LLM pretraining: đoán token; game agent: tối đa hóa reward.",
+      "misconception": "Self-supervised không có nghĩa “không có target”; target được suy ra từ dữ liệu.",
+      "prerequisites": [],
+      "related": [
+        "loss",
+        "pretraining",
+        "rlhf"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "vectors",
+      "group": "foundations",
+      "title": "Vector, matrix & representation",
+      "level": "Cốt lõi",
+      "minutes": 9,
+      "summary": "Các mảng số là ngôn ngữ tính toán của neural networks.",
+      "why": "Embedding, attention và gradient đều vận hành trên vector/matrix.",
+      "how": "Mỗi token hoặc feature được biểu diễn bởi vector d chiều; phép nhân ma trận biến đổi không gian biểu diễn, phép cộng và activation tạo khả năng mô hình hóa phi tuyến.",
+      "example": "Một batch 8 câu, mỗi câu 128 tokens, hidden size 768 → tensor dạng [8,128,768].",
+      "misconception": "Mỗi chiều vector không bắt buộc tương ứng một khái niệm dễ gọi tên.",
+      "prerequisites": [],
+      "related": [
+        "embedding",
+        "attention",
+        "neural-network"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "probability",
+      "group": "foundations",
+      "title": "Logits, softmax & xác suất",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Từ điểm số chưa chuẩn hóa thành phân phối dự đoán.",
+      "why": "LLM xuất ra logits trước khi chọn token; hiểu softmax là hiểu một nửa decoding.",
+      "how": "Với logits zᵢ, pᵢ = exp(zᵢ/T)/Σexp(zⱼ/T). Nhiệt độ T thay đổi độ sắc của phân phối; T thấp tập trung xác suất vào lựa chọn có logit cao.",
+      "example": "Các logits [2,1,0] cho xác suất lần lượt xấp xỉ [0.67,0.24,0.09] khi T=1.",
+      "misconception": "Nhiệt độ không làm model “hiểu sâu hơn”; nó chủ yếu ảnh hưởng phân phối chọn token.",
+      "prerequisites": [
+        "vectors"
+      ],
+      "related": [
+        "sampling",
+        "loss"
+      ],
+      "sources": [],
+      "exercise": "Mở tab Playground và thay temperature. Quan sát xác suất các token thay đổi."
+    },
+    {
+      "id": "loss",
+      "group": "foundations",
+      "title": "Loss & cross-entropy",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Đo mức sai lệch giữa dự đoán và target.",
+      "why": "Không có hàm mục tiêu thì model không biết cần điều chỉnh weights theo hướng nào.",
+      "how": "Trong next-token training, cross-entropy trên token đúng bằng −log p(token_đúng). Tối thiểu hóa loss trung bình trên dữ liệu giúp tăng xác suất cho token mục tiêu.",
+      "example": "Nếu p(target)=0.1 → loss≈2.30; p(target)=0.9 → loss≈0.105.",
+      "misconception": "Train loss giảm không đảm bảo hệ thống hữu ích, factual hoặc an toàn hơn.",
+      "prerequisites": [
+        "probability"
+      ],
+      "related": [
+        "gradient",
+        "pretraining"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "gradient",
+      "group": "foundations",
+      "title": "Gradient descent & backpropagation",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Dùng đạo hàm để điều chỉnh hàng triệu đến hàng tỷ tham số.",
+      "why": "Đây là cơ chế học thật sự phía sau phần lớn deep learning.",
+      "how": "Forward pass tạo prediction → tính loss → backward pass dùng chain rule để tính gradient ∂L/∂w → optimizer cập nhật w ← w − η∇L (đơn giản hóa SGD).",
+      "example": "Nếu tăng một weight làm loss tăng, gradient dương gợi ý giảm weight đó.",
+      "misconception": "Backprop không phải “mô hình suy nghĩ ngược”; đó là thuật toán tính đạo hàm hiệu quả.",
+      "prerequisites": [
+        "loss",
+        "vectors"
+      ],
+      "related": [
+        "neural-network",
+        "training-loop"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "neural-network",
+      "group": "foundations",
+      "title": "Neuron, MLP & các lớp mạng",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Từ phép biến đổi tuyến tính đến function approximation.",
+      "why": "Transformer chứa cả attention lẫn các khối feed-forward (MLP).",
+      "how": "Một layer đơn giản: h = activation(Wx+b). Xếp nhiều layer với nonlinearity tạo hàm rất linh hoạt; số tham số, kiến trúc, dữ liệu và optimization quyết định khả năng học.",
+      "example": "MLP 2 lớp biến input vector thành đặc trưng có ích cho lớp sau.",
+      "misconception": "“Neuron” nhân tạo chỉ là ẩn dụ kỹ thuật, không phải sao chép neuron sinh học.",
+      "prerequisites": [
+        "vectors",
+        "gradient"
+      ],
+      "related": [
+        "attention",
+        "transformer"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "tokenization",
+      "group": "llm",
+      "title": "Tokenization — text thành IDs",
+      "level": "Cốt lõi",
+      "minutes": 9,
+      "summary": "LLM không trực tiếp đọc ký tự; input được chia thành token IDs.",
+      "why": "Một mô hình thao tác trên token IDs và vectors, không phải “hiểu” string theo cách chương trình thông thường.",
+      "how": "Tokenizer có vocabulary và quy tắc phân đoạn (ví dụ BPE). Token có thể là từ, mảnh từ, dấu câu hoặc ký tự; phân đoạn thay đổi theo model và ngôn ngữ.",
+      "example": "“unbelievable” có thể thành nhiều mảnh; tiếng Việt và code có patterns khác nhau.",
+      "misconception": "1 token ≠ 1 từ; ví dụ trong bài chỉ mang tính minh họa, không mô phỏng tokenizer cụ thể.",
+      "prerequisites": [
+        "ai-vs-ml"
+      ],
+      "related": [
+        "embedding",
+        "context-window"
+      ],
+      "sources": [
+        {
+          "label": "TOKENS",
+          "url": "https://help.openai.com/en/articles/4936856-understanding-and-counting-tokens"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "embedding",
+      "group": "llm",
+      "title": "Embedding — IDs thành vectors",
+      "level": "Cốt lõi",
+      "minutes": 9,
+      "summary": "Lookup một hàng của ma trận trọng số để biểu diễn token.",
+      "why": "Token ID chỉ là số thứ tự; model cần biểu diễn liên tục để tính attention.",
+      "how": "Embedding matrix E có dạng [vocab_size, d_model]; token t lấy E[t]. Vectors sau đó được cập nhật qua các transformer layers, tạo contextual representations.",
+      "example": "Hai từ xuất hiện trong ngữ cảnh giống nhau có thể có biểu diễn hữu ích gần nhau, nhưng không phải quy tắc tuyệt đối.",
+      "misconception": "Token embedding ban đầu không phải toàn bộ “ý nghĩa” cố định của từ.",
+      "prerequisites": [
+        "tokenization",
+        "vectors"
+      ],
+      "related": [
+        "positional",
+        "attention"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "positional",
+      "group": "llm",
+      "title": "Position information — biết thứ tự",
+      "level": "Cốt lõi",
+      "minutes": 8,
+      "summary": "Self-attention thuần không tự biết vị trí nếu thiếu thông tin thứ tự.",
+      "why": "Câu “chó cắn mèo” và “mèo cắn chó” cần được phân biệt.",
+      "how": "Positional embeddings hoặc các phương án như RoPE đưa thông tin vị trí/tương đối vào tính toán attention. Cách làm khác nhau giữa các họ model.",
+      "example": "Cùng token “bank” ở hai vị trí và ngữ cảnh sẽ tạo biểu diễn khác sau các layers.",
+      "misconception": "Không có một phương án positional encoding chung cho mọi transformer.",
+      "prerequisites": [
+        "embedding"
+      ],
+      "related": [
+        "attention",
+        "transformer"
+      ],
+      "sources": [
+        {
+          "label": "TRANSFORMER",
+          "url": "https://research.google/pubs/attention-is-all-you-need/"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "attention",
+      "group": "llm",
+      "title": "Self-attention — Query / Key / Value",
+      "level": "Cốt lõi",
+      "minutes": 15,
+      "summary": "Mỗi token có thể kết hợp thông tin từ token khác theo trọng số.",
+      "why": "Đây là trung tâm của transformer; hiểu Q/K/V giúp đọc những tối ưu hiện đại.",
+      "how": "Từ hidden states X, tạo Q=XWq, K=XWk, V=XWv. Scores = QKᵀ/√dₖ; masking loại vị trí không được nhìn; softmax(scores) nhân V tạo representation mới. Multi-head cho phép nhiều cách kết hợp song song.",
+      "example": "Trong “The animal didn’t cross because it was tired”, attention có thể giúp token “it” nhận thông tin từ các token liên quan.",
+      "misconception": "Attention weights không phải lời giải thích nhân quả đáng tin cậy cho toàn bộ quyết định của model.",
+      "prerequisites": [
+        "vectors",
+        "probability",
+        "embedding"
+      ],
+      "related": [
+        "transformer",
+        "kv-cache"
+      ],
+      "sources": [
+        {
+          "label": "ATTENTION",
+          "url": "https://arxiv.org/abs/1706.03762"
+        }
+      ],
+      "exercise": "Mở tab Playground → Attention. Chuyển query token để thấy ma trận trọng số minh họa thay đổi."
+    },
+    {
+      "id": "transformer",
+      "group": "llm",
+      "title": "Transformer block — bên trong một layer",
+      "level": "Cốt lõi",
+      "minutes": 15,
+      "summary": "Attention + MLP + residual + normalization, lặp nhiều tầng.",
+      "why": "Một LLM decoder-only hiện đại thường gồm một stack transformer blocks (với biến thể kiến trúc).",
+      "how": "Luồng khái quát: hidden states → self-attention (causal mask) → residual / normalization → feed-forward MLP → residual / normalization → output. Thứ tự normalization, activation và attention variants có thể khác nhau.",
+      "example": "Attention gom thông tin giữa token; MLP biến đổi features ở từng vị trí; residual giúp tối ưu mạng sâu.",
+      "misconception": "Paper Transformer 2017 có encoder-decoder; không phải mọi LLM đều giống đúng sơ đồ gốc.",
+      "prerequisites": [
+        "attention",
+        "neural-network",
+        "positional"
+      ],
+      "related": [
+        "causal-lm",
+        "training-loop"
+      ],
+      "sources": [
+        {
+          "label": "TRANSFORMER",
+          "url": "https://research.google/pubs/attention-is-all-you-need/"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "causal-lm",
+      "group": "llm",
+      "title": "Next-token prediction & causal mask",
+      "level": "Cốt lõi",
+      "minutes": 13,
+      "summary": "Dự đoán token tiếp theo từ prefix đang có.",
+      "why": "Đây là objective rất phổ biến cho decoder-only LLM (GPT-like).",
+      "how": "P(x₁…xₙ)=∏ᵢP(xᵢ|x₁…xᵢ₋₁). Trong training, causal mask ngăn token nhìn “tương lai”; nhờ teacher forcing có thể tính loss nhiều vị trí song song. Lúc generate, output nối vào context rồi lặp.",
+      "example": "Prompt “Thủ đô Pháp là” → logits trên vocabulary → chọn token kế → tiếp tục.",
+      "misconception": "“Chỉ đoán token” là mô tả objective, không nói lên toàn bộ năng lực nổi lên sau huấn luyện.",
+      "prerequisites": [
+        "transformer",
+        "loss"
+      ],
+      "related": [
+        "sampling",
+        "pretraining"
+      ],
+      "sources": [
+        {
+          "label": "CAUSAL",
+          "url": "https://huggingface.co/docs/transformers/en/tasks/language_modeling"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "sampling",
+      "group": "llm",
+      "title": "Decoding — greedy, top-k, top-p, temperature",
+      "level": "Cốt lõi",
+      "minutes": 11,
+      "summary": "Biến phân phối token thành một câu trả lời cụ thể.",
+      "why": "Output khác nhau không nhất thiết do weights thay đổi.",
+      "how": "Greedy chọn token có xác suất cao nhất; sampling lấy mẫu từ phân phối; top-k giữ k token đầu, top-p giữ tập token tích lũy p, temperature điều chỉnh xác suất trước lấy mẫu. Một số API có tham số/giới hạn khác.",
+      "example": "Prompt giống hệt có thể cho hai câu khác nhau khi sampling ngẫu nhiên.",
+      "misconception": "Temperature=0 thường gần deterministic nhưng toàn hệ thống không luôn bảo đảm kết quả lặp lại 100%.",
+      "prerequisites": [
+        "probability",
+        "causal-lm"
+      ],
+      "related": [
+        "context-window"
+      ],
+      "sources": [],
+      "exercise": "Thử Playground với T=0.4 và T=1.6, so sánh độ tập trung xác suất."
+    },
+    {
+      "id": "context-window",
+      "group": "llm",
+      "title": "Context window & in-context learning",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Những token model có thể xét trong một lần xử lý có giới hạn.",
+      "why": "Điều này quyết định prompt dài, repo context, retrieval và chi phí.",
+      "how": "Context bao gồm instructions, messages, tool outputs và các nội dung liên quan; dài hơn thường tăng chi phí/latency. In-context learning là thay đổi hành vi bằng ví dụ trong prompt, không đồng nghĩa update model weights.",
+      "example": "Cho 2 ví dụ JSON transformation rồi yêu cầu ví dụ thứ 3 — model áp dụng pattern trong context.",
+      "misconception": "Context dài không tự động đảm bảo model chú ý đúng mọi chi tiết.",
+      "prerequisites": [
+        "tokenization",
+        "causal-lm"
+      ],
+      "related": [
+        "context-engineering",
+        "rag",
+        "kv-cache"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "kv-cache",
+      "group": "llm",
+      "title": "KV cache & inference efficiency",
+      "level": "Đào sâu",
+      "minutes": 11,
+      "summary": "Lưu Key/Value của prefix để tránh tính lại toàn bộ ở mỗi token.",
+      "why": "Một agent chat dài hoặc output dài cần xử lý latency và memory rất thực tế.",
+      "how": "Ở autoregressive decoding, các layer giữ K/V trước đó; token mới tính K/V mới và attention tới cache. Cache tăng memory theo số token/layers và có thể dùng prefix caching hoặc eviction tùy hệ thống.",
+      "example": "Không có KV cache, mỗi bước generate có thể tái tính rất nhiều biểu diễn prefix giống nhau.",
+      "misconception": "KV cache không làm tăng kiến thức model; nó là kỹ thuật tăng hiệu quả tính toán.",
+      "prerequisites": [
+        "attention",
+        "causal-lm"
+      ],
+      "related": [
+        "context-window"
+      ],
+      "sources": [
+        {
+          "label": "FLASH",
+          "url": "https://arxiv.org/abs/2205.14135"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "reasoning",
+      "group": "llm",
+      "title": "Reasoning / test-time compute",
+      "level": "Đào sâu",
+      "minutes": 11,
+      "summary": "Dùng thêm compute trong inference cho các bài cần nhiều bước.",
+      "why": "Các model tối ưu cho reasoning làm nổi bật khác biệt giữa model “trả lời nhanh” và hệ thống dành thời gian xử lý bài khó.",
+      "how": "Khả năng reasoning phụ thuộc dữ liệu, training, inference policy và có thể thêm search/verifier; không thể đánh đồng mọi model “reasoning” với một thuật toán duy nhất. Cần đánh giá bằng độ chính xác, cost và latency.",
+      "example": "Một coding task có thể cần viết giả thuyết, chạy test, sửa code và kiểm chứng thay vì trả lời một lượt.",
+      "misconception": "Một lời giải thích mạch lạc không chứng minh reasoning đúng; cần kiểm chứng bằng kết quả.",
+      "prerequisites": [
+        "causal-lm"
+      ],
+      "related": [
+        "agent-loop",
+        "evals"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "pretraining",
+      "group": "training",
+      "title": "Pretraining — học pattern từ corpus",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Tối ưu objective trên lượng lớn text/code và dữ liệu khác.",
+      "why": "Pretraining tạo nền tảng tri thức thống kê và biểu diễn; không phải ghi chép một database đáng tin cậy.",
+      "how": "Dữ liệu được thu thập/lọc/dedup/mixture, token hóa, chia batch. Với causal LM, tối ưu cross-entropy dự đoán token tiếp theo qua nhiều bước trên GPU/TPU.",
+      "example": "Model nhìn vô số pattern code, tài liệu và ngôn ngữ, rồi học weights có ích cho nhiều tác vụ.",
+      "misconception": "Không nên hiểu model là tìm exact match câu trả lời trong training set (dù memorization có thể xảy ra).",
+      "prerequisites": [
+        "causal-lm",
+        "gradient"
+      ],
+      "related": [
+        "training-loop",
+        "sft"
+      ],
+      "sources": [
+        {
+          "label": "CAUSAL",
+          "url": "https://huggingface.co/docs/transformers/en/tasks/language_modeling"
+        },
+        {
+          "label": "GPT3",
+          "url": "https://arxiv.org/abs/2005.14165"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "training-loop",
+      "group": "training",
+      "title": "Training loop: forward → loss → backward → update",
+      "level": "Cốt lõi",
+      "minutes": 14,
+      "summary": "Gradient accumulation, batching, optimizer, validation, checkpoint.",
+      "why": "Bạn sẽ có mental model của pipeline huấn luyện một mô hình thật.",
+      "how": "Một step: sample batch → forward → cross-entropy → backprop → optimizer step; lặp hàng tỷ token. Mixed precision, distributed data/model parallelism và checkpoint là các phần kỹ thuật giúp scale.",
+      "example": "Pseudo: for batch in loader: loss=model(batch); loss.backward(); optimizer.step(); optimizer.zero_grad().",
+      "misconception": "Một epoch không bắt buộc là đơn vị phù hợp cho mọi bài pretraining quy mô lớn.",
+      "prerequisites": [
+        "gradient",
+        "pretraining"
+      ],
+      "related": [
+        "sft",
+        "lora"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "sft",
+      "group": "training",
+      "title": "SFT — supervised instruction tuning",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Học phong cách trả lời theo ví dụ instruction → good response.",
+      "why": "Base model biết hoàn thành text nhưng chưa chắc hiểu ý người dùng hoặc đối thoại đúng format.",
+      "how": "SFT sử dụng dữ liệu demonstration/ideal responses, tối ưu xác suất các response tokens trong bối cảnh instruction. Đây thường là một giai đoạn của post-training.",
+      "example": "“Tóm tắt email thành 3 bullet” + ví dụ output tốt → model dần tuân theo định dạng.",
+      "misconception": "SFT không thay thế kiểm chứng sự thật; data quality và evaluation vẫn quan trọng.",
+      "prerequisites": [
+        "pretraining"
+      ],
+      "related": [
+        "rlhf",
+        "lora"
+      ],
+      "sources": [
+        {
+          "label": "INSTRUCT",
+          "url": "https://openai.com/index/instruction-following/"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "rlhf",
+      "group": "training",
+      "title": "RLHF, DPO & preference optimization",
+      "level": "Đào sâu",
+      "minutes": 13,
+      "summary": "Điều chỉnh hành vi dựa trên phản hồi hoặc cặp ưu tiên.",
+      "why": "Model có nhiều câu trả lời “hợp ngữ pháp” nhưng khác nhau về hữu ích, trung thực và an toàn.",
+      "how": "RLHF cổ điển: SFT → label ranking → reward model → tối ưu policy (ví dụ PPO). DPO trực tiếp tối ưu từ các cặp preferred/rejected dưới mục tiêu tương ứng, tránh cần reward model riêng theo công thức DPO.",
+      "example": "Hai câu trả lời cùng đúng kỹ thuật nhưng một câu rõ ràng, dễ dùng hơn: dữ liệu ưu tiên giúp định hướng.",
+      "misconception": "Không phải mọi model chat đều dùng cùng pipeline RLHF; nhiều biến thể post-training đang tồn tại.",
+      "prerequisites": [
+        "sft",
+        "loss"
+      ],
+      "related": [
+        "evals"
+      ],
+      "sources": [
+        {
+          "label": "INSTRUCT",
+          "url": "https://openai.com/index/instruction-following/"
+        },
+        {
+          "label": "DPO",
+          "url": "https://arxiv.org/abs/2305.18290"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "lora",
+      "group": "training",
+      "title": "Fine-tuning, LoRA & adapters",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Thích nghi model với một domain/task bằng huấn luyện bổ sung.",
+      "why": "Phân biệt khi nào cần fine-tuning, khi nào RAG hay prompt là đủ sẽ tiết kiệm nhiều chi phí.",
+      "how": "Full fine-tuning cập nhật nhiều/tất cả weights; LoRA giữ phần lớn weights cố định và học hai ma trận low-rank ΔW≈BA, giảm tham số trainable. Quantization-aware variants có thêm trade-off.",
+      "example": "Muốn output JSON nhất quán có thể bắt đầu với schema/prompt; domain style ổn định có thể cân nhắc SFT/LoRA.",
+      "misconception": "Fine-tuning không phải công cụ cập nhật facts liên tục tốt nhất; dữ liệu động thường hợp với retrieval.",
+      "prerequisites": [
+        "training-loop",
+        "sft"
+      ],
+      "related": [
+        "rag"
+      ],
+      "sources": [
+        {
+          "label": "LORA",
+          "url": "https://arxiv.org/abs/2106.09685"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "scaling",
+      "group": "training",
+      "title": "Scaling laws & trade-offs",
+      "level": "Đào sâu",
+      "minutes": 10,
+      "summary": "Model size, compute, data quantity/quality và inference budget.",
+      "why": "Tại sao mô hình lớn hơn thường mạnh hơn nhưng cũng đắt hơn?",
+      "how": "Empirical scaling laws mô tả quan hệ giữa loss, parameters, dataset và compute trong một số miền. Tuy nhiên chất lượng dữ liệu, kiến trúc, mixture, training recipe, inference compute và eval cũng ảnh hưởng mạnh.",
+      "example": "Hai model cùng số tham số có chất lượng khác nhau vì dữ liệu/training recipe khác.",
+      "misconception": "Parameter count không phải thước đo duy nhất; benchmark cũng có giới hạn.",
+      "prerequisites": [
+        "pretraining"
+      ],
+      "related": [
+        "reasoning",
+        "moe"
+      ],
+      "sources": [
+        {
+          "label": "SCALING",
+          "url": "https://arxiv.org/abs/2001.08361"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "prompts",
+      "group": "agents",
+      "title": "Prompting, instructions & structured outputs",
+      "level": "Nhập môn",
+      "minutes": 9,
+      "summary": "Thiết kế input để model hiểu mục tiêu và contract đầu ra.",
+      "why": "Đây là điểm bắt đầu khi tích hợp LLM vào sản phẩm.",
+      "how": "Phân biệt hệ thống instructions, user request, context/data; dùng output schema/validator để kiểm tra hợp lệ, few-shot examples khi cần. Prompt chỉ tạo tín hiệu hướng dẫn, không tạo rào an ninh cứng.",
+      "example": "Yêu cầu model trả về object có fields {risk, explanation, action}, sau đó validate bằng code.",
+      "misconception": "Một prompt “không bao giờ làm X” không thay thế authorization ở backend.",
+      "prerequisites": [
+        "context-window"
+      ],
+      "related": [
+        "context-engineering",
+        "security"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "rag",
+      "group": "agents",
+      "title": "RAG — Retrieval Augmented Generation",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Đọc dữ liệu ngoài model tại thời điểm query.",
+      "why": "Dùng khi kiến thức cần cập nhật, có nguồn riêng hoặc cần dẫn chứng.",
+      "how": "Indexing/chunking → embeddings hoặc keyword search → retrieve → rerank → đưa context vào prompt → generate với citations. Chất lượng phụ thuộc retrieval, quyền truy cập và kiểm tra groundedness.",
+      "example": "Hỏi “API nội bộ auth thế nào?” → tìm docs trong repo/wiki → trả lời có file/line references.",
+      "misconception": "RAG không sửa weights và cũng không tự động loại hallucinations hay prompt injection.",
+      "prerequisites": [
+        "embedding",
+        "context-window"
+      ],
+      "related": [
+        "context-engineering",
+        "evals"
+      ],
+      "sources": [
+        {
+          "label": "RAG",
+          "url": "https://arxiv.org/abs/2005.11401"
+        },
+        {
+          "label": "OWASP",
+          "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "tool-calling",
+      "group": "agents",
+      "title": "Tool/function calling",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Model đề xuất lời gọi công cụ; ứng dụng mới là bên thực thi.",
+      "why": "Đây là khác biệt giữa chatbot biết trả lời và coding assistant có thể chạy lệnh.",
+      "how": "Backend cung cấp tool schema, model tạo structured call với arguments; orchestrator kiểm tra quyền, execute, thu kết quả và trả lại context. LLM không trực tiếp nhận quyền OS trừ khi hệ thống cấp.",
+      "example": "Tool read_file({path}) → app đọc file → đưa nội dung lại cho model.",
+      "misconception": "Tool call là quyết định được model đề xuất, không phải bằng chứng thao tác đã thành công.",
+      "prerequisites": [
+        "prompts"
+      ],
+      "related": [
+        "agent-loop",
+        "security"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "agent-loop",
+      "group": "agents",
+      "title": "Agent loop — observe → decide → act → verify",
+      "level": "Cốt lõi",
+      "minutes": 14,
+      "summary": "Orchestrator dùng LLM lặp giữa suy luận, hành động và kiểm chứng.",
+      "why": "Nó giải thích tại sao coding agent sửa được code thay vì chỉ gợi ý snippet.",
+      "how": "State gồm goal, context, tools, budget, observations. Vòng lặp: đọc nhiệm vụ → chọn công cụ → thực thi → quan sát kết quả → điều chỉnh → dừng theo điều kiện. ReAct là một trong những công trình nền tảng về xen kẽ reasoning và actions.",
+      "example": "Agent sửa bug: grep → đọc test → patch → run test → kiểm tra diff → báo cáo.",
+      "misconception": "Agent ≠ model tự ý làm được mọi thứ; orchestration, permission, môi trường và stop conditions rất quan trọng.",
+      "prerequisites": [
+        "tool-calling",
+        "context-engineering"
+      ],
+      "related": [
+        "evals",
+        "security",
+        "reasoning"
+      ],
+      "sources": [
+        {
+          "label": "REACT",
+          "url": "https://arxiv.org/abs/2210.03629"
+        },
+        {
+          "label": "AGENTS",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ],
+      "exercise": "Mở tab Playground → Agent loop, quan sát cách trạng thái thay đổi qua mỗi bước."
+    },
+    {
+      "id": "context-engineering",
+      "group": "agents",
+      "title": "Context engineering & memory",
+      "level": "Cốt lõi",
+      "minutes": 13,
+      "summary": "Chọn đúng thông tin, đúng thời điểm, đúng thứ tự và đúng quyền.",
+      "why": "Với coding agents, việc nạp toàn bộ repo không luôn tốt bằng tìm đúng file và kết quả test.",
+      "how": "Context có instruction, task, retrieved files, tool outputs, short-term summary. Memory ngoài model có thể là store tách riêng; cần chiến lược retrieval, compaction và tránh nhiễm thông tin không tin cậy.",
+      "example": "Lọc file theo symbol → đọc 200 dòng liên quan → chạy test → tóm tắt trước lượt tiếp theo.",
+      "misconception": "Bigger context không đồng nghĩa better context. Và memory ngoài model khác model weights.",
+      "prerequisites": [
+        "context-window",
+        "rag",
+        "tool-calling"
+      ],
+      "related": [
+        "agent-loop",
+        "kv-cache"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "workflows",
+      "group": "agents",
+      "title": "Workflow vs autonomous agent",
+      "level": "Cốt lõi",
+      "minutes": 10,
+      "summary": "Code-driven graph và model-driven loop giải quyết bài toán khác nhau.",
+      "why": "Không phải task nào cũng cần AI agent.",
+      "how": "Workflow có các bước định sẵn và model điền vào các bước; agent cho model quyền quyết định bước kế tiếp trong giới hạn. Cả hai có thể kết hợp với retrieval và tool calls.",
+      "example": "Pipeline classify → summarize → review là workflow; debugging nhiều vòng có thể phù hợp agent.",
+      "misconception": "Thêm nhiều agent có thể làm tăng latency, cost và độ khó debug, không mặc định tăng hiệu quả.",
+      "prerequisites": [
+        "tool-calling"
+      ],
+      "related": [
+        "agent-loop",
+        "evals"
+      ],
+      "sources": [
+        {
+          "label": "AGENTS",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "evals",
+      "group": "agents",
+      "title": "Evaluation, tracing & observability",
+      "level": "Cốt lõi",
+      "minutes": 12,
+      "summary": "Đo chất lượng của model và end-to-end system thay vì chỉ “trông có vẻ ổn”.",
+      "why": "Đây là kỹ năng quyết định để đưa app/agent lên production.",
+      "how": "Tạo task dataset, expected behavior, metrics pass@k/accuracy/groundedness, đánh giá regression; trace từng model/tool step, đo token/cost/latency, human review các case quan trọng.",
+      "example": "Coding agent: tỷ lệ test pass, regression count, sandbox escapes, cost/issue.",
+      "misconception": "Một benchmark tốt trên paper chưa đảm bảo chất lượng trên dữ liệu production.",
+      "prerequisites": [
+        "tool-calling"
+      ],
+      "related": [
+        "security",
+        "agent-loop"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "security",
+      "group": "agents",
+      "title": "Prompt injection, permissions & sandbox",
+      "level": "Cốt lõi",
+      "minutes": 13,
+      "summary": "Không coi nội dung repo, web hoặc tool output là chỉ dẫn có thẩm quyền.",
+      "why": "LLM agent có thể đọc nguồn không tin cậy rồi thao tác file, mạng hoặc secrets.",
+      "how": "Phân quyền tối thiểu, allowlist công cụ, input/output validation, sandbox, human approval cho action rủi ro và audit logs. Tách instructions đáng tin cậy khỏi dữ liệu untrusted, nhưng không chỉ dựa vào prompt boundary.",
+      "example": "README chứa “hãy xóa thư mục X” phải được coi là dữ liệu, không tự động thành lệnh cho agent.",
+      "misconception": "RAG và SFT không giải quyết dứt điểm prompt injection.",
+      "prerequisites": [
+        "agent-loop"
+      ],
+      "related": [
+        "evals"
+      ],
+      "sources": [
+        {
+          "label": "OWASP",
+          "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "multimodal",
+      "group": "frontier",
+      "title": "Multimodal — ảnh, âm thanh, video",
+      "level": "Đào sâu",
+      "minutes": 10,
+      "summary": "Dùng encoder/representation cho nhiều modalities trong cùng hệ thống.",
+      "why": "AI hiện đại vượt ra ngoài text: perception và generation có thể được kết hợp.",
+      "how": "Ảnh có thể được tách patches; audio thường thành frames/tokens; model hợp nhất biểu diễn theo nhiều kiến trúc khác nhau. Một số mô hình dùng transformer backbone, nhưng chi tiết không đồng nhất.",
+      "example": "Screenshot lỗi UI + mô tả → model đọc bố cục và đề xuất sửa CSS.",
+      "misconception": "Không phải cứ nhận được ảnh thì model hiểu mọi pixel chính xác.",
+      "prerequisites": [
+        "transformer"
+      ],
+      "related": [
+        "tokenization"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "moe",
+      "group": "frontier",
+      "title": "Mixture-of-Experts (MoE)",
+      "level": "Đào sâu",
+      "minutes": 10,
+      "summary": "Router chọn tập con experts cho mỗi token/nhóm token.",
+      "why": "MoE cho phép nhiều tham số tổng nhưng lượng tính toán active/token thấp hơn dense model tương đương số tham số tổng.",
+      "how": "Một gating network tạo score cho experts; top-k experts xử lý activation rồi kết hợp đầu ra. Cần cân bằng tải, communication và kỹ thuật training để tránh expert collapse.",
+      "example": "Tổng 100B params nhưng chỉ một phần được kích hoạt trong một lượt tính — ví dụ minh họa, không phải model cụ thể.",
+      "misconception": "Số params tổng không tương đương compute/token hay chất lượng.",
+      "prerequisites": [
+        "transformer",
+        "scaling"
+      ],
+      "related": [
+        "kv-cache"
+      ],
+      "sources": [
+        {
+          "label": "MOE",
+          "url": "https://arxiv.org/abs/1701.06538"
+        }
+      ],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    },
+    {
+      "id": "open-questions",
+      "group": "frontier",
+      "title": "Những câu hỏi còn mở của AI",
+      "level": "Đào sâu",
+      "minutes": 9,
+      "summary": "Factuality, generalization, interpretability, safety, cost.",
+      "why": "Học AI hiệu quả còn là biết điều gì chưa chắc chắn và điều gì cần thử nghiệm.",
+      "how": "Nhiều năng lực chưa có thước đo đầy đủ; real-world agent reliability phụ thuộc cả model, tools, environment và human oversight. Interpretability, training data governance và safety là các lĩnh vực nghiên cứu tích cực.",
+      "example": "Trước khi tin một agent, đo hiệu quả trên bộ tasks thật và thử adversarial cases.",
+      "misconception": "Không nên suy từ câu trả lời mạch lạc ra mức độ hiểu hoặc tính chính xác tuyệt đối.",
+      "prerequisites": [
+        "evals"
+      ],
+      "related": [
+        "reasoning",
+        "security"
+      ],
+      "sources": [],
+      "exercise": "Tự giải thích lại khái niệm này bằng 3 câu, không dùng từ chuyên môn."
+    }
+  ],
+  "timeline": [
+    {
+      "year": "1943",
+      "name": "McCulloch–Pitts neuron",
+      "desc": "Mô hình neuron logic đặt một phần nền tảng toán học cho neural networks.",
+      "topic": "ai-history",
+      "lane": "Neural"
+    },
+    {
+      "year": "1950",
+      "name": "Turing & “imitation game”",
+      "desc": "Đặt câu hỏi máy có thể thể hiện hành vi thông minh đến đâu.",
+      "topic": "ai-history",
+      "lane": "Foundations"
+    },
+    {
+      "year": "1956",
+      "name": "Dartmouth workshop",
+      "desc": "Artificial Intelligence trở thành một chương trình nghiên cứu có tên gọi rõ ràng.",
+      "topic": "symbolic",
+      "lane": "Symbolic"
+    },
+    {
+      "year": "1958",
+      "name": "Perceptron",
+      "desc": "Mô hình học tuyến tính sớm, trước làn sóng deep learning rất lâu.",
+      "topic": "neural-network",
+      "lane": "Neural"
+    },
+    {
+      "year": "1970s",
+      "name": "Expert systems",
+      "desc": "Rule-based systems phát triển mạnh trong một số miền chuyên môn.",
+      "topic": "expert-systems",
+      "lane": "Symbolic"
+    },
+    {
+      "year": "1980s",
+      "name": "Backprop & AI winters",
+      "desc": "Mạng nhiều tầng được nghiên cứu mạnh hơn trong bối cảnh đầu tư AI lên xuống theo chu kỳ.",
+      "topic": "gradient",
+      "lane": "Neural"
+    },
+    {
+      "year": "1997",
+      "name": "Deep Blue",
+      "desc": "Chess search & engineering thể hiện sức mạnh của AI không phụ thuộc LLM.",
+      "topic": "symbolic",
+      "lane": "Symbolic"
+    },
+    {
+      "year": "2012",
+      "name": "AlexNet / ImageNet",
+      "desc": "Deep CNN + GPU tạo bước ngoặt cho nhận dạng ảnh.",
+      "topic": "deep-learning",
+      "lane": "Neural"
+    },
+    {
+      "year": "2016",
+      "name": "AlphaGo",
+      "desc": "Deep networks kết hợp Monte Carlo tree search và reinforcement learning.",
+      "topic": "deep-learning",
+      "lane": "Neural"
+    },
+    {
+      "year": "2017",
+      "name": "Transformer",
+      "desc": "Attention Is All You Need; nền tảng cho các kiến trúc ngôn ngữ quy mô lớn.",
+      "topic": "transformer",
+      "lane": "LLM"
+    },
+    {
+      "year": "2018",
+      "name": "GPT-1 & BERT",
+      "desc": "Pretraining transformer trở thành hướng tiếp cận quan trọng của NLP.",
+      "topic": "pretraining",
+      "lane": "LLM"
+    },
+    {
+      "year": "2020",
+      "name": "GPT-3 & RAG paper",
+      "desc": "Scaling LLM cùng việc kết nối truy xuất tri thức ngoài model.",
+      "topic": "rag",
+      "lane": "Systems"
+    },
+    {
+      "year": "2022",
+      "name": "InstructGPT, ChatGPT, ReAct",
+      "desc": "Instruction-following, hội thoại và tool-using agent được chú ý rộng rãi.",
+      "topic": "sft",
+      "lane": "Systems"
+    },
+    {
+      "year": "2023",
+      "name": "DPO & coding assistants",
+      "desc": "Preference tuning và ứng dụng LLM vào developer workflows tiếp tục phát triển.",
+      "topic": "rlhf",
+      "lane": "Systems"
+    },
+    {
+      "year": "2024–2026",
+      "name": "Reasoning, multimodal & agents",
+      "desc": "Tiến bộ rộng trên inference-time compute, multimodal và hệ thống có tool; không phải một kiến trúc duy nhất.",
+      "topic": "reasoning",
+      "lane": "Systems"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "engineer",
+      "title": "Engineer-first",
+      "subtitle": "Bắt đầu từ Codex/Claude Code rồi đào xuống LLM",
+      "accent": "#b7efab",
+      "duration": "~3–4 tuần",
+      "path": [
+        "ai-vs-ml",
+        "tool-calling",
+        "agent-loop",
+        "context-engineering",
+        "rag",
+        "tokenization",
+        "attention",
+        "transformer",
+        "causal-lm",
+        "pretraining",
+        "sft",
+        "evals",
+        "security"
+      ]
+    },
+    {
+      "id": "inside",
+      "title": "Inside-out LLM",
+      "subtitle": "Từ vector/gradient tới transformer và training",
+      "accent": "#c3b2ff",
+      "duration": "~4–5 tuần",
+      "path": [
+        "vectors",
+        "probability",
+        "loss",
+        "gradient",
+        "neural-network",
+        "tokenization",
+        "embedding",
+        "positional",
+        "attention",
+        "transformer",
+        "causal-lm",
+        "sampling",
+        "pretraining",
+        "training-loop",
+        "rlhf"
+      ]
+    },
+    {
+      "id": "history",
+      "title": "History-first",
+      "subtitle": "Đi theo thời gian để hiểu các bước ngoặt",
+      "accent": "#f2cc81",
+      "duration": "~2–3 tuần",
+      "path": [
+        "ai-history",
+        "symbolic",
+        "expert-systems",
+        "statistical-ml",
+        "deep-learning",
+        "transformer-era",
+        "transformer",
+        "pretraining",
+        "agent-loop"
+      ]
+    }
+  ]
+};
+
+</script>
+  <script>
+/* AI Atlas — dependency-free, runs locally and on GitHub Pages. */
+(() => {
+'use strict';
+const D = window.AI_ATLAS_DATA;
+if (!D || !Array.isArray(D.topics)) { document.getElementById('app').textContent = 'Không tìm thấy content/atlas-data.js'; return; }
+const byId = new Map(D.topics.map(t => [t.id, t]));
+const byGroup = new Map(D.groups.map(g => [g.id, g]));
+const app = document.getElementById('app');
+const store = {
+  get(k, def) { try { const v = localStorage.getItem('ai-atlas-' + k); return v === null ? def : JSON.parse(v); } catch { return def; } },
+  set(k, val) { try { localStorage.setItem('ai-atlas-' + k, JSON.stringify(val)); } catch {} }
+};
+let completed = new Set(store.get('completed', []).filter(id => byId.has(id)));
+let theme = store.get('theme','dark');
+let view = 'home', activeTopic = null, filter = 'all', search = '', chosenTrack = store.get('track','engineer');
+let temperature = 1, queryToken = 0, agentStep = 0;
+const esc = x => String(x == null ? '' : x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pnum = x => Math.round(100*x);
+const countDone = ids => ids.filter(id => completed.has(id)).length;
+const pctDone = ids => ids.length ? Math.round(countDone(ids)*100/ids.length) : 0;
+const allIds = D.topics.map(t => t.id);
+const progress = () => pctDone(allIds);
+const gName = id => byGroup.get(id)?.label || id;
+const openButton = (id, text, cls='related-btn') => `<button class="${cls}" data-open="${esc(id)}">${esc(text)}</button>`;
+function setView(v){ activeTopic=null; location.hash='#'+v; if(location.hash==='#'+v) route(); }
+function parseHash(){ const [v, id] = location.hash.replace(/^#/,'').split('/'); return {v:['home','map','timeline','path','labs'].includes(v)?v:'home', id:byId.has(id)?id:null}; }
+function route(){ const parsed=parseHash(); view=parsed.v; activeTopic=parsed.id; render(); window.scrollTo({top:0,behavior:'instant'}); }
+function iconFor(v){return {home:'⌂',map:'◇',timeline:'◷',path:'↗',labs:'⌘'}[v]||'•'}
+function sidebar(){
+ const menu=[['home','Tổng quan'],['map','Knowledge map'],['timeline','Lịch sử AI'],['path','Learning paths'],['labs','Playground']];
+ return `<aside class="sidebar"><div class="side-brand"><div class="brand-row"><div class="brand-logo">∴</div><div><div class="brand-title">AI Atlas<span style="color:var(--lime)">.</span></div><div class="tiny-caps">A FIELD GUIDE</div></div></div><p>Hiểu AI từ lịch sử, toán học đến cách coding agents vận hành.</p></div><div class="sidebar-scroller"><div class="side-caption tiny-caps">EXPLORATION</div>${menu.map(([id,label])=>`<button data-nav="${id}" class="side-link ${view===id?'active':''}" title="${label}"><span class="sym">${iconFor(id)}</span><span class="link-text">${label}</span><span class="arrow">↗</span></button>`).join('')}<div class="side-divider"></div><div class="side-caption tiny-caps">TOPIC COLLECTIONS</div>${D.groups.map(g=>`<button data-group="${g.id}" class="side-node" title="${esc(g.label)}"><span class="dot" style="background:${g.color}"></span><span style="flex:1">${esc(g.label)}</span><span class="count">${D.topics.filter(t=>t.group===g.id).length}</span></button>`).join('')}</div><div class="side-bottom"><div class="side-progress-top"><span>Your progress</span><strong>${progress()}%</strong></div><div class="small-progress"><div style="width:${progress()}%"></div></div><div style="font-size:11px;color:var(--muted);margin-top:8px">${countDone(allIds)} / ${allIds.length} topics explored</div></div></aside>`;
+}
+function header(){ return `<header class="topbar"><div class="breadcrumbs">AI ATLAS <span style="margin:0 8px">/</span> <strong>${{home:'Overview',map:'Knowledge Map',timeline:'History',path:'Learning Paths',labs:'Playground'}[view]}</strong></div><div class="top-actions"><button class="icon-btn" data-nav="map" title="Tìm kiếm">⌕ <span class="kbd">⌘ K</span></button><button class="icon-btn" data-theme-toggle title="Đổi theme">${theme==='dark'?'☀':'☾'}</button></div></header>`; }
+function footer(){return `<footer class="footer"><span>AI Atlas / a living field guide · ${D.version} · Updated ${D.updated}</span><span>Content-first · zero dependencies · offline-ready</span></footer>`;}
+function home(){return `<div class="hero"><div><div class="eyebrow">THE DEVELOPER'S FIELD GUIDE TO AI</div><h1 class="display">Understand the <em>machine.</em><br>Not just the hype.</h1><p class="intro">Từ Symbolic AI của những năm 1950 đến Transformer, LLM và coding agents. Một bản đồ để nối những khái niệm bạn đang dùng mỗi ngày với cơ chế phía sau chúng.</p><div class="hero-actions"><button class="btn" data-nav="map">Khám phá knowledge map <span>↗</span></button><button class="btn secondary" data-nav="path">Chọn lộ trình học ↗</button></div></div><div class="hero-visual"><div class="terminal-title"><span>HOW A CODING AGENT WORKS</span><span class="terminal-dots"><span></span><span></span><span></span></span></div><div class="pipeline"><div class="pipeline-node"><b>USER GOAL</b><small>“Find and fix this failing test”</small></div><span class="pipeline-arrow">↓</span><div class="pipeline-node glow"><b>LLM REASONING & PLANNING</b><small>Context · Transformer · Inference</small></div><span class="pipeline-arrow">↓</span><div class="pipeline-node"><b>TOOLS & ENVIRONMENT</b><small>read_file · edit_file · run_tests</small></div><span class="pipeline-arrow">↻</span><div class="mini-label">OBSERVE → ACT → VERIFY → REPEAT</div></div></div></div><div class="metric-row"><div class="metric"><div class="value">${D.topics.length}</div><div class="detail">Connected topics</div></div><div class="metric"><div class="value">${D.timeline.length}</div><div class="detail">Historical milestones</div></div><div class="metric"><div class="value">${D.tracks.length}</div><div class="detail">Learning paths</div></div><div class="metric"><div class="value">${progress()}%</div><div class="detail">Your learning progress</div></div></div><div class="section-head"><div><div class="section-kicker">THREE WAYS TO EXPLORE</div><h2>Không có một đường học duy nhất.</h2><p>Chọn lăng kính phù hợp với câu hỏi đang muốn giải đáp.</p></div></div><div class="learn-grid"><button class="learn-card" style="text-align:left" data-nav="timeline"><div class="glyph">◷</div><h3>History / Vì sao AI thành ra thế này?</h3><p>Symbolic reasoning, AI winters, deep learning, transformers và thời kỳ agents.</p><span class="go">Khám phá timeline ↗</span></button><button class="learn-card" style="text-align:left" data-nav="map"><div class="glyph">◇</div><h3>Mechanism / Model hoạt động như thế nào?</h3><p>Neural networks, Q/K/V attention, training, token generation và inference.</p><span class="go">Mở knowledge map ↗</span></button><button class="learn-card" style="text-align:left" data-nav="labs"><div class="glyph">⌘</div><h3>Systems / Từ LLM thành AI agent</h3><p>Tool use, RAG, context engineering, observe–act loop và kiểm soát rủi ro.</p><span class="go">Thử playground ↗</span></button></div><div class="section-head"><div><div class="section-kicker">THE CORE PIPELINE</div><h2>What happens inside an LLM?</h2><p>Đây là mental model giản lược, không thay thế từng biến thể kiến trúc.</p></div></div><div class="flow-strip">${[['01','Text / prompt','Natural language'],['02','Tokenizer','Token IDs'],['03','Embeddings','Numeric vectors'],['04','Transformer','Attention + MLP'],['05','Logits & sampling','Next token → repeat']].map(([n,name,desc],i)=>`<button class="flow-step" data-open="${['tokenization','tokenization','embedding','transformer','sampling'][i]}"><span class="big">${n}</span><b>${name}</b><span>${desc}</span></button>`).join('')}</div><div class="notice"><strong>Đề xuất cho bạn:</strong> vào <button class="link-button" data-nav="path">Engineer-first</button> trước. Với background software engineering, hiểu tool calling và agent loop ngay sẽ tạo động lực để quay xuống attention, pretraining và training loop.</div>${footer()}`; }
+function mapPage(){return `<div class="eyebrow">AN INTERCONNECTED KNOWLEDGE GRAPH</div><h1 class="page-title">Knowledge map<span style="color:var(--lime)">.</span></h1><p class="page-subtitle">Nhấn vào một node để mở bài học, prerequisite và topic liên quan. Đây là cây phân loại để điều hướng; quan hệ kiến thức thực tế là một đồ thị nhiều chiều.</p><div class="tools-row"><label class="search"><span>⌕</span><input id="topic-search" placeholder="Tìm topic, keyword, ví dụ..." aria-label="Tìm topic" value="${esc(search)}" /></label><button class="icon-btn" data-clear-search title="Xóa bộ lọc">Reset</button></div><div class="filter-row" id="filter-row">${filters()}</div><div id="map-results">${mapResults()}</div>${footer()}`;}
+function filters(){return `<button data-filter="all" class="chip ${filter==='all'?'active':''}">Tất cả (${D.topics.length})</button>${D.groups.map(g=>`<button data-filter="${g.id}" class="chip ${filter===g.id?'active':''}">${esc(g.label.split('/')[1].trim())}</button>`).join('')}`;}
+function mapResults(){const q=search.trim().toLocaleLowerCase('vi');const matched=D.topics.filter(t=>(filter==='all'||t.group===filter)&&(!q||`${t.title} ${t.summary} ${t.why} ${t.how}`.toLocaleLowerCase('vi').includes(q))); if(!matched.length)return `<div class="empty">Không có topic trùng khớp. Thử keyword ngắn hơn hoặc reset filter.</div>`;const available=D.groups.filter(g=>matched.some(t=>t.group===g.id));return `<div class="result-count">Showing ${matched.length} / ${D.topics.length} topics · ${countDone(matched.map(t=>t.id))} đã học</div><div class="map-grid">${available.map(g=>`<section class="branch"><div class="branch-head"><div class="branch-icon" style="color:${g.color}">${g.icon}</div><div><h3>${esc(g.label)}</h3><p>${esc(g.subtitle)}</p></div></div><div class="node-list">${matched.filter(t=>t.group===g.id).map(t=>`<button data-open="${t.id}" class="node ${completed.has(t.id)?'is-done':''}"><span class="node-title">${esc(t.title)} ${completed.has(t.id)?'<span class="done-icon">✓</span>':''}</span><span class="node-sub">${esc(t.summary)}</span><span class="node-meta"><span class="level-dot" style="background:${g.color}"></span>${esc(t.level)} · ${t.minutes} phút ${t.prerequisites.length?' · '+t.prerequisites.length+' prerequisites':''}</span></button>`).join('')}</div></section>`).join('')}</div>`;}
+function timelinePage(){return `<div class="eyebrow">A SELECTIVE HISTORY · 1943 — NOW</div><h1 class="page-title">How did we get here?</h1><p class="page-subtitle">Không có con đường thẳng từ rule-based AI đến ChatGPT. Nhiều nhánh cùng tiến hóa. Timeline dưới đây chọn các mốc hữu ích cho việc hiểu LLM hiện đại, không phải lịch sử đầy đủ.</p><div class="timeline">${D.timeline.map(x=>`<article class="time-card"><div class="time-year">${esc(x.year)}</div><div><h3 class="time-title">${esc(x.name)}</h3><p class="time-desc">${esc(x.desc)}</p><button class="link-button" style="margin-top:8px" data-open="${x.topic}">Explore concept ↗</button></div><div class="time-tag">${esc(x.lane)}</div></article>`).join('')}</div><div class="notice"><strong>Gợi ý:</strong> lịch sử AI còn bao gồm robotics, planning, speech, computer vision, probabilistic AI và reinforcement learning. Timeline này cố ý nhấn mạnh những đường dẫn tới LLM và agents.</div>${footer()}`;}
+function pathPage(){const track=D.tracks.find(t=>t.id===chosenTrack)||D.tracks[0];const done=countDone(track.path);return `<div class="eyebrow">LEARNING WITHOUT GETTING LOST</div><h1 class="page-title">Choose your path<span style="color:var(--lime)">.</span></h1><p class="page-subtitle">Có thể nhảy giữa các lộ trình. Trạng thái đã học được lưu trên trình duyệt này, không gửi lên máy chủ.</p><div class="track-grid">${D.tracks.map(tr=>`<button data-track="${tr.id}" class="track-card ${tr.id===track.id?'active':''}"><div class="badge-track">${tr.id===track.id?'● SELECTED PATH':'○ LEARNING PATH'}</div><h3>${esc(tr.title)}</h3><p>${esc(tr.subtitle)}</p><div class="track-time">${tr.path.length} topics · ${esc(tr.duration)}</div></button>`).join('')}</div><div class="track-heading"><strong>${esc(track.title)} · ${done} / ${track.path.length} completed</strong><span>${Math.round(done*100/track.path.length)}%</span></div><div class="small-progress" style="margin:0 0 18px;height:8px"><div style="width:${Math.round(done*100/track.path.length)}%"></div></div><div class="track-list">${track.path.map((id,i)=>{const t=byId.get(id);return `<div class="track-step ${completed.has(id)?'done':''}"><div class="track-num">${completed.has(id)?'✓':String(i+1).padStart(2,'0')}</div><div class="track-body"><b>${esc(t.title)}</b><span>${esc(gName(t.group))} · ${t.minutes} phút · ${esc(t.level)}</span></div><button class="track-view" data-open="${id}">Học ↗</button></div>`}).join('')}</div>${footer()}`;}
+function softmax(logits, t){const vals=logits.map(x=>Math.exp((x-Math.max(...logits))/t));const sum=vals.reduce((a,b)=>a+b,0);return vals.map(x=>x/sum)}
+function samplingLab(){let probs=softmax([2,1,.1,-.45],temperature);return `<div class="slider-top"><span>Temperature (T)</span><strong id="temp-label">${temperature.toFixed(1)}</strong></div><input class="temperature-slider" id="temp-slider" type="range" min="0.2" max="2.0" step="0.1" value="${temperature}" aria-label="Temperature"/><div id="sampling-bars">${renderSamplingBars(probs)}</div><div class="lab-small">Logits giả lập [2, 1, 0.1, −0.45]. Softmax(z/T). Đây là phân phối mô phỏng, không phải output từ model thực.</div>`;}
+function renderSamplingBars(probs){return ['Paris','Lyon','Berlin','Rome'].map((label,i)=>`<div class="bar-row"><b>${label}</b><div class="bar-track"><div class="bar-fill" style="width:${probs[i]*100}%"></div></div><div class="bar-pct">${(probs[i]*100).toFixed(1)}%</div></div>`).join('');}
+const attTokens=['The','cat','sleeps'];const attMatrix=[[.75,.16,.09],[.12,.75,.13],[.12,.58,.30]];
+function attentionLab(){return `<span class="mini-label">QUERY TOKEN</span><div class="token-buttons">${attTokens.map((t,i)=>`<button class="token-choice ${queryToken===i?'active':''}" data-query="${i}">${esc(t)}</button>`).join('')}</div><div id="attention-bars">${renderAttentionBars()}</div><div class="lab-small">Weights là ví dụ giả lập để trực quan hóa thao tác weighted sum của Value vectors. Không đại diện attention map thực của một model.</div>`;}
+function renderAttentionBars(){return attTokens.map((t,i)=>`<div class="bar-row"><b>${esc(t)}</b><div class="bar-track"><div class="bar-fill" style="width:${attMatrix[queryToken][i]*100}%;background:${i===queryToken?'var(--lime)':'var(--purple)'}"></div></div><div class="bar-pct">${(attMatrix[queryToken][i]*100).toFixed(0)}%</div></div>`).join('');}
+const agentStages=[['01 / GOAL','Observe task','User: “Fix failing test in auth middleware.”'],['02 / OBSERVE','Read project','Tool: search repository, inspect tests & middleware.'],['03 / DECIDE','Form a hypothesis','Model proposes likely bug and one small patch.'],['04 / ACT','Apply patch','Tool: edit relevant file (with permissions).'],['05 / VERIFY','Run tests','Tool returns pass/fail + test logs.'],['06 / FINISH','Report result','If tests fail, loop back to observe; otherwise summarize changes.']];
+function agentLab(){const [step,title,desc]=agentStages[agentStep];return `<div class="agent-stage"><small>${step}</small><b>${title}</b><p>${desc}</p></div><div class="step-dots">${agentStages.map((_,i)=>`<span class="${i<=agentStep?'passed':''}"></span>`).join('')}</div><div class="lab-actions"><button class="btn small" data-agent-next>${agentStep===agentStages.length-1?'Restart ↺':'Next step →'}</button><button class="btn secondary small" data-agent-reset>Reset</button></div>`;}
+function labsPage(){return `<div class="eyebrow">INTERACTIVE INTUITIONS</div><h1 class="page-title">Play with the mechanisms.</h1><p class="page-subtitle">Thử mô phỏng nhỏ để biến một công thức trừu tượng thành trực giác. Các thông số dưới đây là ví dụ minh họa, không phải mô phỏng chính xác một LLM production.</p><div class="lab-grid"><section class="lab-card"><div class="mini-label">LAB 01 / PROBABILITY</div><h3>Sampling & temperature</h3><p>Khi thay T, mô hình ưu tiên token có logit cao nhiều hay ít? Quan sát phân phối dưới đây.</p>${samplingLab()}<div style="margin-top:14px">${openButton('sampling','Đọc: Decoding ↗')}</div></section><section class="lab-card"><div class="mini-label">LAB 02 / ATTENTION</div><h3>Query → Key → weighted Values</h3><p>Chọn token truy vấn (Query) và quan sát nó gán trọng số cho các token khác.</p>${attentionLab()}<div style="margin-top:14px">${openButton('attention','Đọc: Self-attention ↗')}</div></section><section class="lab-card" style="grid-column:1/-1"><div class="mini-label">LAB 03 / AGENT ORCHESTRATION</div><h3>Walk through a coding-agent loop</h3><p>Mô phỏng các bước phối hợp model và tool. Trạng thái bước được điều khiển bằng code, chứ không phải LLM chạy trực tiếp trong trang.</p><div class="agent-lab" id="agent-stage-ui">${agentLab()}</div><div style="margin-top:16px">${openButton('agent-loop','Đọc: Agent loop ↗')} ${openButton('security','Đọc: Security ↗')}</div></section></div>${footer()}`;}
+function topicDrawer(){if(!activeTopic)return '';const t=byId.get(activeTopic);if(!t)return '';const g=byGroup.get(t.group);const sources=t.sources.filter(s=>/^https:\/\//.test(s.url));return `<div class="drawer-backdrop" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="${esc(t.title)}"><div class="drawer-top"><div class="tiny-caps">AI ATLAS / TOPIC ${esc(D.topics.indexOf(t)+1).padStart(2,'0')}</div><button class="close" data-close aria-label="Đóng bài học">×</button></div><article class="reader"><div class="eyebrow" style="color:${g.color}">${esc(g.label)}</div><h2>${esc(t.title)}</h2><p class="reader-lead">${esc(t.summary)}</p><div class="reader-meta"><span class="pill">${esc(t.level)}</span><span class="pill">◷ ${t.minutes} phút</span><span class="pill">${completed.has(t.id)?'✓ Đã học':'○ Chưa học'}</span></div><section class="reader-section"><h3>✦ Tại sao cần biết?</h3><p>${esc(t.why)}</p></section><section class="reader-section"><h3>◈ Cơ chế cốt lõi</h3><p>${esc(t.how)}</p></section><section class="reader-section"><h3>⌘ Ví dụ để hình dung</h3><div class="reader-example">${esc(t.example)}</div></section><section class="reader-section"><h3>⚠ Hiểu lầm thường gặp</h3><div class="reader-callout"><strong>Đừng nhầm:</strong> ${esc(t.misconception)}</div></section><section class="reader-section"><h3>↗ Thử ngay</h3><p>${esc(t.exercise)}</p></section>${t.prerequisites.length?`<section class="reader-section"><h3>Kiến thức nên có trước</h3><div class="reader-links">${t.prerequisites.map(id=>openButton(id,byId.get(id).title)).join('')}</div></section>`:''}${t.related.length?`<section class="reader-section"><h3>Liên kết sang chủ đề khác</h3><div class="reader-links">${t.related.map(id=>openButton(id,byId.get(id).title)).join('')}</div></section>`:''}${sources.length?`<section class="reader-section"><h3>Đọc sâu hơn · nguồn tham khảo</h3>${sources.map(s=>`<a class="source-link" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.label)} <span>↗</span></a>`).join('')}</section>`:''}<button class="btn mark-btn" data-complete="${t.id}">${completed.has(t.id)?'✓ Đã học · đánh dấu chưa học':'○ Đánh dấu đã học'}</button></article></aside>`;}
+function render(){document.documentElement.dataset.theme=theme;const pages={home,map:mapPage,timeline:timelinePage,path:pathPage,labs:labsPage};document.body.style.overflow=activeTopic?'hidden':'';app.innerHTML=`<div class="app-shell">${sidebar()}<div class="main-area">${header()}<main class="content">${(pages[view]||home)()}</main></div></div>${topicDrawer()}`;}
+function updateLab(){const a=document.getElementById('agent-stage-ui');if(a)a.innerHTML=agentLab();}
+function updateMapResults(){const m=document.getElementById('map-results');if(m)m.innerHTML=mapResults();const f=document.getElementById('filter-row');if(f)f.innerHTML=filters();}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-nav],[data-open],[data-group],[data-filter],[data-close],[data-track],[data-agent-next],[data-agent-reset],[data-query],[data-theme-toggle],[data-complete],[data-clear-search]');if(!b)return;
+ if(b.hasAttribute('data-nav')){setView(b.dataset.nav);return;}
+ if(b.hasAttribute('data-open')){const h='#'+view+'/'+b.dataset.open;if(location.hash===h)route();else location.hash=h;return;}
+ if(b.hasAttribute('data-close')){setView(view);return;}
+ if(b.hasAttribute('data-group')){filter=b.dataset.group;search='';setView('map');return;}
+ if(b.hasAttribute('data-filter')){filter=b.dataset.filter;updateMapResults();return;}
+ if(b.hasAttribute('data-clear-search')){search='';filter='all';const input=document.getElementById('topic-search');if(input)input.value='';updateMapResults();return;}
+ if(b.hasAttribute('data-track')){chosenTrack=b.dataset.track;store.set('track',chosenTrack);render();return;}
+ if(b.hasAttribute('data-theme-toggle')){theme=theme==='dark'?'light':'dark';store.set('theme',theme);render();return;}
+ if(b.hasAttribute('data-complete')){const id=b.dataset.complete;completed.has(id)?completed.delete(id):completed.add(id);store.set('completed',[...completed]);render();return;}
+ if(b.hasAttribute('data-query')){queryToken=Number(b.dataset.query);const parent=document.getElementById('attention-bars');if(parent)parent.innerHTML=renderAttentionBars();document.querySelectorAll('.token-choice').forEach(x=>x.classList.toggle('active',Number(x.dataset.query)===queryToken));return;}
+ if(b.hasAttribute('data-agent-next')){agentStep=(agentStep+1)%agentStages.length;updateLab();return;}
+ if(b.hasAttribute('data-agent-reset')){agentStep=0;updateLab();return;}
+});
+document.addEventListener('input',e=>{if(e.target.id==='topic-search'){search=e.target.value;updateMapResults();}if(e.target.id==='temp-slider'){temperature=Number(e.target.value);const label=document.getElementById('temp-label');if(label)label.textContent=temperature.toFixed(1);const bars=document.getElementById('sampling-bars');if(bars)bars.innerHTML=renderSamplingBars(softmax([2,1,.1,-.45],temperature));}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeTopic){setView(view);}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();activeTopic=null;filter='all';setView('map');document.getElementById('topic-search')?.focus();}});
+window.addEventListener('hashchange',route);
+route();
+})();
+
+</script>
+</body>
+</html>
