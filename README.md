@@ -42,7 +42,7 @@ The only data file you need for new lessons is `content/atlas-data.js`. It assig
 
 `group` must match a group id; `prerequisites`, `related`, and track `path` must reference valid topic IDs. Add a milestone in `timeline` or a step in `tracks` by referencing the topic ID. Make links primary-source when practical. Avoid presenting toy examples as a literal tokenizer or real attention weights.
 
-> Note: `scripts/make_content.py` was used to author the v1 seed. If you edit `atlas-data.js` manually, **do not rerun** `make_content.py` unless you intend to regenerate its seeded data. Regenerate the standalone build with `python scripts/build.py` after editing data or assets.
+> Note: Add or edit topics directly in `content/atlas-data.js`. Regenerate the standalone build with `python scripts/build.py` after editing data or assets.
 
 ## Publish to GitHub Pages
 
