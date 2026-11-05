@@ -24,7 +24,7 @@ const gName = id => byGroup.get(id)?.label || id;
 const openButton = (id, text, cls='related-btn') => `<button class="${cls}" data-open="${esc(id)}">${esc(text)}</button>`;
 function setView(v){ activeTopic=null; location.hash='#'+v; if(location.hash==='#'+v) route(); }
 function parseHash(){ const [v, id] = location.hash.replace(/^#/,'').split('/'); return {v:['home','map','timeline','path','labs'].includes(v)?v:'home', id:byId.has(id)?id:null}; }
-function route(){ const parsed=parseHash(); view=parsed.v; activeTopic=parsed.id; render(); window.scrollTo({top:0,behavior:'instant'}); }
+function route(){ const parsed=parseHash(); const changePage=parsed.v!==view; view=parsed.v; activeTopic=parsed.id; render(); if(changePage)window.scrollTo({top:0,behavior:'instant'}); }
 function iconFor(v){return {home:'⌂',map:'◇',timeline:'◷',path:'↗',labs:'⌘'}[v]||'•'}
 function sidebar(){
  const menu=[['home','Tổng quan'],['map','Knowledge map'],['timeline','Lịch sử AI'],['path','Learning paths'],['labs','Playground']];
@@ -58,27 +58,49 @@ function readingSequence(t) {
   return { ids, index: i, previous: ids[i - 1] || null, next: ids[i + 1] || null,
     label: tr ? tr.title : (byGroup.get(t.group)?.label || 'Cùng nhóm') };
 }
-function renderChapter(t) {
+function chapterSections(t) {
   const chapter = (window.AI_ATLAS_CHAPTERS || {})[t.id];
-  const sections = Array.isArray(chapter?.sections) && chapter.sections.length ? chapter.sections : [
+  return Array.isArray(chapter?.sections) && chapter.sections.length ? chapter.sections : [
     { type: 'text', title: 'Tổng quan', text: t.description || t.summary || 'Nội dung đang được biên soạn.' }
   ];
-  return sections.map(section => {
+}
+function renderChapter(t) {
+  const sections = chapterSections(t);
+  return sections.map((section, index) => {
+    const anchor = '<span class="reader-anchor" id="reader-sec-' + index + '" aria-hidden="true"></span>';
     const heading = section.title ? '<h3>' + esc(section.title) + '</h3>' : '';
     switch (section.type) {
-      case 'text': return '<section class="reader-section reader-prose">' + heading + paragraphs(section.text) + '</section>';
-      case 'steps': return '<section class="reader-section">' + heading + '<ol class="chapter-steps">' + (section.items || []).map(item =>
+      case 'text': return anchor + '<section class="reader-section reader-prose">' + heading + paragraphs(section.text) + '</section>';
+      case 'steps': return anchor + '<section class="reader-section">' + heading + '<ol class="chapter-steps">' + (section.items || []).map(item =>
         '<li>' + (typeof item === 'string' ? esc(item) : '<strong>' + esc(item.title) + '</strong><span>' + esc(item.text) + '</span>') + '</li>'
       ).join('') + '</ol></section>';
-      case 'bullets': return '<section class="reader-section">' + heading + '<ul class="chapter-bullets">' + (section.items || []).map(item => '<li>' + esc(item) + '</li>').join('') + '</ul></section>';
-      case 'compare': return '<section class="reader-section">' + heading + '<div class="chapter-compare">' + (section.rows || []).map(item =>
+      case 'bullets': return anchor + '<section class="reader-section">' + heading + '<ul class="chapter-bullets">' + (section.items || []).map(item => '<li>' + esc(item) + '</li>').join('') + '</ul></section>';
+      case 'compare': return anchor + '<section class="reader-section">' + heading + '<div class="chapter-compare">' + (section.rows || []).map(item =>
         '<div class="compare-item"><strong>' + esc(item[0]) + '</strong><span>' + esc(item[1]) + '</span></div>').join('') + '</div></section>';
-      case 'code': return '<section class="reader-section">' + heading + (section.text ? paragraphs(section.text) : '') + '<div class="chapter-code"><div class="code-label">' + esc(section.language || 'PSEUDOCODE') + '</div><pre><code>' + esc(section.code || '') + '</code></pre></div></section>';
-      case 'note': return '<section class="reader-section">' + '<div class="reader-callout">' + heading + paragraphs(section.text) + '</div></section>';
-      case 'question': return '<section class="reader-section">' + '<div class="chapter-question"><span class="mini-label">TỰ KIỂM TRA</span>' + heading + paragraphs(section.text) + '</div></section>';
+      case 'code': return anchor + '<section class="reader-section">' + heading + (section.text ? paragraphs(section.text) : '') + '<div class="chapter-code"><div class="code-label">' + esc(section.language || 'PSEUDOCODE') + '</div><pre><code>' + esc(section.code || '') + '</code></pre></div></section>';
+      case 'note': return anchor + '<section class="reader-section">' + '<div class="reader-callout">' + heading + paragraphs(section.text) + '</div></section>';
+      case 'question': return anchor + '<section class="reader-section">' + '<div class="chapter-question"><span class="mini-label">TỰ KIỂM TRA</span>' + heading + paragraphs(section.text) + '</div></section>';
       default: return '';
     }
   }).join('');
+}
+function readerToc(t, seq) {
+  const sections = chapterSections(t);
+  const buttons = [
+    '<button class="reader-toc-link active" data-reader-jump="reader-start" aria-current="location"><span class="toc-index">00</span><span>Mở đầu</span></button>',
+    ...sections.map((section, index) =>
+      '<button class="reader-toc-link" data-reader-jump="reader-sec-' + index + '">' +
+        '<span class="toc-index">' + String(index + 1).padStart(2, '0') + '</span>' +
+        '<span>' + esc(section.title || 'Nội dung') + '</span></button>'
+    )
+  ].join('');
+  const next = seq.next ? byId.get(seq.next) : null;
+  return '<aside class="reader-toc" aria-label="Mục lục bài học">' +
+    '<div class="reader-toc-inner"><div class="tiny-caps">TRONG BÀI NÀY</div>' +
+    '<nav class="reader-toc-links" aria-label="Đi đến phần của bài học">' + buttons + '</nav>' +
+    (next ? '<div class="reader-toc-next"><span class="tiny-caps">BÀI TIẾP THEO</span>' +
+      '<button data-open="' + esc(next.id) + '">' + esc(next.title) + ' <span aria-hidden="true">↗</span></button></div>' : '') +
+    '</div></aside>';
 }
 function topicDrawer(){
   if(!activeTopic) return '';
@@ -86,35 +108,44 @@ function topicDrawer(){
   const g=byGroup.get(t.group), seq=readingSequence(t);
   const sources=(t.sources||[]).filter(s=>/^https:\/\//.test(s.url));
   return '<div class="drawer-backdrop" data-close></div>' +
-    '<aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(t.title) + '">' +
-      '<div class="drawer-top"><div class="tiny-caps">THUCDE.DEV / AI ATLAS · BÀI ' + (seq.index + 1) + '/' + seq.ids.length + '</div><button class="close" data-close aria-label="Đóng bài học">×</button></div>' +
-      '<div class="reader-scroll"><article class="reader">' +
+    '<section class="drawer reader-modal" role="dialog" aria-modal="true" aria-labelledby="reader-title">' +
+      '<div class="drawer-top"><div class="tiny-caps">THUCDE.DEV / AI ATLAS · BÀI ' + (seq.index + 1) + '/' + seq.ids.length + '</div><button class="close" data-close aria-label="Đóng bài học">×</button></div><div class="reader-reading-progress" aria-hidden="true"><span></span></div>' +
+      '<div class="reader-body"><div class="reader-scroll"><article class="reader" id="reader-start">' +
         '<div class="eyebrow" style="color:' + g.color + '">' + esc(g.label) + '</div>' +
-        '<h2>' + esc(t.title) + '</h2><p class="reader-lead">' + esc((window.AI_ATLAS_CHAPTERS||{})[t.id]?.intro || t.summary) + '</p>' +
+        '<h2 id="reader-title">' + esc(t.title) + '</h2><p class="reader-lead">' + esc((window.AI_ATLAS_CHAPTERS||{})[t.id]?.intro || t.summary) + '</p>' +
         '<div class="reader-meta"><span class="pill">' + esc(t.level) + '</span><span class="pill">◷ ' + t.minutes + ' phút dự kiến</span><span class="pill" data-topic-status>' +
         (completed.has(t.id) ? '✓ Đã học' : '○ Chưa học') + '</span></div>' +
         renderChapter(t) +
         (t.prerequisites.length ? '<section class="reader-section"><h3>Nên đọc trước</h3><div class="reader-links">' + t.prerequisites.map(id=>openButton(id,byId.get(id).title)).join('') + '</div></section>' : '') +
         (t.related.length ? '<section class="reader-section"><h3>Khám phá tiếp</h3><div class="reader-links">' + t.related.map(id=>openButton(id,byId.get(id).title)).join('') + '</div></section>' : '') +
         (sources.length ? '<section class="reader-section"><h3>Nguồn tham khảo</h3>' + sources.map(v=>'<a class="source-link" href="' + esc(v.url) + '" target="_blank" rel="noopener noreferrer">' + esc(v.label) + ' <span>↗</span></a>').join('') + '</section>' : '') +
-      '</article></div>' +
+      '</article></div>' + readerToc(t,seq) + '</div>' +
       '<div class="reader-bottom" aria-label="Điều hướng bài học"><div class="reader-bottom-context"><span>' + esc(seq.label) + '</span><strong>' + (seq.index + 1) + ' / ' + seq.ids.length + '</strong></div>' +
         '<div class="reader-bottom-actions">' +
           (seq.previous ? '<button class="reader-nav-btn" data-open="' + esc(seq.previous) + '" title="Bài trước: ' + esc(byId.get(seq.previous).title) + '">← <span>Trước</span></button>' : '<button class="reader-nav-btn" disabled>← <span>Trước</span></button>') +
           '<button class="reader-complete ' + (completed.has(t.id) ? 'completed' : '') + '" data-complete="' + esc(t.id) + '">' + (completed.has(t.id) ? '✓ Đã học' : '○ Đánh dấu đã học') + '</button>' +
           (seq.next ? '<button class="reader-nav-btn reader-nav-next" data-open="' + esc(seq.next) + '" title="Bài tiếp: ' + esc(byId.get(seq.next).title) + '"><span>Tiếp</span> →</button>' : '<button class="reader-nav-btn reader-nav-next" disabled><span>Hết bài</span> ✓</button>') +
         '</div></div>' +
-    '</aside>';
+    '</section>';
 }
 
-function render(){document.documentElement.dataset.theme=theme;const pages={home,map:mapPage,timeline:timelinePage,path:pathPage,labs:labsPage};document.body.style.overflow=activeTopic?'hidden':'';app.innerHTML=`<div class="app-shell">${sidebar()}<div class="main-area">${header()}<main class="content">${(pages[view]||home)()}</main></div></div>${topicDrawer()}`;}
+function render(){document.documentElement.dataset.theme=theme;const pages={home,map:mapPage,timeline:timelinePage,path:pathPage,labs:labsPage};document.body.style.overflow=activeTopic?'hidden':'';app.innerHTML=`<div class="app-shell" ${activeTopic?'inert':''}>${sidebar()}<div class="main-area">${header()}<main class="content">${(pages[view]||home)()}</main></div></div>${topicDrawer()}`;if(activeTopic){document.querySelector('.reader-modal .close')?.focus({preventScroll:true});syncReaderPosition();}}
 function updateLab(){const a=document.getElementById('agent-stage-ui');if(a)a.innerHTML=agentLab();}
 function updateMapResults(){const m=document.getElementById('map-results');if(m)m.innerHTML=mapResults();const f=document.getElementById('filter-row');if(f)f.innerHTML=filters();}
 document.addEventListener('click',e=>{
- const b=e.target.closest('[data-nav],[data-open],[data-group],[data-filter],[data-close],[data-track],[data-agent-next],[data-agent-reset],[data-query],[data-theme-toggle],[data-complete],[data-clear-search]');if(!b)return;
+ const b=e.target.closest('[data-nav],[data-open],[data-group],[data-filter],[data-close],[data-track],[data-agent-next],[data-agent-reset],[data-query],[data-theme-toggle],[data-complete],[data-clear-search],[data-reader-jump]');if(!b)return;
+ if(b.hasAttribute('data-reader-jump')){
+   const scroller=document.querySelector('.reader-scroll');
+   const target=document.getElementById(b.dataset.readerJump);
+   if(scroller&&target){
+     const offset=target.getBoundingClientRect().top-scroller.getBoundingClientRect().top+scroller.scrollTop;
+     scroller.scrollTo({top:Math.max(0,offset-18),behavior:'smooth'});
+   }
+   return;
+ }
  if(b.hasAttribute('data-nav')){setView(b.dataset.nav);return;}
  if(b.hasAttribute('data-open')){const h='#'+view+'/'+b.dataset.open;if(location.hash===h)route();else location.hash=h;return;}
- if(b.hasAttribute('data-close')){setView(view);return;}
+ if(b.hasAttribute('data-close')){const last=activeTopic;setView(view);if(last){const opener=[...document.querySelectorAll('[data-open]')].find(x=>x.dataset.open===last);opener?.focus({preventScroll:true});}return;}
  if(b.hasAttribute('data-group')){filter=b.dataset.group;search='';setView('map');return;}
  if(b.hasAttribute('data-filter')){filter=b.dataset.filter;updateMapResults();return;}
  if(b.hasAttribute('data-clear-search')){search='';filter='all';const input=document.getElementById('topic-search');if(input)input.value='';updateMapResults();return;}
@@ -125,8 +156,40 @@ document.addEventListener('click',e=>{
  if(b.hasAttribute('data-agent-next')){agentStep=(agentStep+1)%agentStages.length;updateLab();return;}
  if(b.hasAttribute('data-agent-reset')){agentStep=0;updateLab();return;}
 });
+function syncReaderPosition(){
+ const scroller=document.querySelector('.reader-scroll');
+ if(!scroller)return;
+ const max=Math.max(0,scroller.scrollHeight-scroller.clientHeight);
+ const pct=max?Math.min(100,Math.max(0,100*scroller.scrollTop/max)):100;
+ const progress=document.querySelector('.reader-reading-progress span');
+ if(progress)progress.style.width=pct+'%';
+ const scrollTop=scroller.getBoundingClientRect().top;
+ let current='reader-start';
+ scroller.querySelectorAll('.reader-anchor').forEach(anchor=>{
+   if(anchor.getBoundingClientRect().top-scrollTop<100)current=anchor.id;
+ });
+ document.querySelectorAll('[data-reader-jump]').forEach(btn=>{
+   const active=btn.dataset.readerJump===current;
+   btn.classList.toggle('active',active);
+   if(active)btn.setAttribute('aria-current','location'); else btn.removeAttribute('aria-current');
+ });
+}
+document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('reader-scroll'))syncReaderPosition();},true);
 document.addEventListener('input',e=>{if(e.target.id==='topic-search'){search=e.target.value;updateMapResults();}if(e.target.id==='temp-slider'){temperature=Number(e.target.value);const label=document.getElementById('temp-label');if(label)label.textContent=temperature.toFixed(1);const bars=document.getElementById('sampling-bars');if(bars)bars.innerHTML=renderSamplingBars(softmax([2,1,.1,-.45],temperature));}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeTopic){setView(view);}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();activeTopic=null;filter='all';setView('map');document.getElementById('topic-search')?.focus();}});
+document.addEventListener('keydown',e=>{
+ if(activeTopic&&e.key==='Tab'){
+   const modal=document.querySelector('.reader-modal');
+   const focusable=modal?[...modal.querySelectorAll('button:not([disabled]),a[href],input:not([disabled])')].filter(x=>x.getClientRects().length):[];
+   if(focusable.length){
+     const first=focusable[0],last=focusable[focusable.length-1];
+     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+     else if(!modal.contains(document.activeElement)){e.preventDefault();first.focus();}
+   }
+ }
+ if(e.key==='Escape'&&activeTopic){const last=activeTopic;setView(view);const opener=[...document.querySelectorAll('[data-open]')].find(x=>x.dataset.open===last);opener?.focus({preventScroll:true});}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();activeTopic=null;filter='all';setView('map');document.getElementById('topic-search')?.focus();}
+});
 window.addEventListener('hashchange',route);
 route();
 })();

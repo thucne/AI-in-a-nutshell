@@ -64,3 +64,73 @@
   .compare-item{grid-template-columns:1fr;gap:2px}
   .chapter-code pre{font-size:11px}
 }
+
+
+/* Reader v3: centered, spacious lesson workspace rather than edge drawer. */
+.drawer-backdrop{background:rgba(4,8,13,.64);backdrop-filter:blur(3px)}
+.reader-modal{
+  left:50%;top:50%;right:auto;bottom:auto;
+  width:min(1180px,calc(100vw - 48px));
+  height:min(900px,calc(100dvh - 48px));
+  max-height:calc(100dvh - 48px);
+  border:1px solid var(--line);
+  border-radius:20px;
+  transform:translate(-50%,-50%);
+  animation:reader-modal-in .18s ease-out;
+  box-shadow:0 30px 100px rgba(0,0,0,.42);
+  overflow:hidden
+}
+@keyframes reader-modal-in{
+  from{opacity:0;transform:translate(-50%,-48%) scale(.985)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+.reader-modal .drawer-top{min-height:62px;padding:13px 24px;flex:0 0 auto}
+.reader-modal .drawer-top .close{flex:none}
+.reader-reading-progress{height:3px;background:var(--panel3);flex:none}
+.reader-reading-progress span{display:block;height:100%;width:0;background:var(--lime);transition:width .08s linear}
+.reader-body{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 248px}
+.reader-body .reader-scroll{height:100%;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable}
+.reader-body .reader{width:100%;max-width:830px;margin-inline:auto;padding:40px 56px 60px;box-sizing:border-box}
+.reader-body .reader h2{font-size:clamp(29px,2.6vw,40px);line-height:1.17}
+.reader-body .reader-section p{font-size:14.5px;line-height:1.93}
+.reader-body .reader-lead{font-size:16px}
+.reader-anchor{display:block;height:1px;scroll-margin-top:18px}
+.reader-toc{min-height:0;overflow-y:auto;border-left:1px solid var(--line);background:var(--panel2);overscroll-behavior:contain}
+.reader-toc-inner{padding:30px 17px 24px}
+.reader-toc-links{display:flex;flex-direction:column;gap:5px;margin-top:15px}
+.reader-toc-link{
+  width:100%;display:flex;align-items:flex-start;gap:10px;
+  text-align:left;border:1px solid transparent;border-radius:10px;
+  background:transparent;color:var(--muted);padding:10px 11px;
+  font-size:12px;line-height:1.5;cursor:pointer
+}
+.reader-toc-link:hover{color:var(--heading);background:var(--panel3)}
+.reader-toc-link.active{border-color:var(--line);background:var(--glow);color:var(--lime);font-weight:750}
+.reader-toc-link:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.reader-toc-link .toc-index{flex:none;font:700 10px/1.8 ui-monospace,monospace;opacity:.65}
+.reader-toc-next{border-top:1px solid var(--line);margin-top:26px;padding-top:22px}
+.reader-toc-next button{margin-top:10px;width:100%;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--heading);text-align:left;font-size:12px;line-height:1.6}
+.reader-toc-next button:hover{border-color:var(--lime);color:var(--lime)}
+.reader-toc-next button span{color:var(--lime)}
+.reader-modal .reader-bottom{padding:11px 24px calc(12px + env(safe-area-inset-bottom,0px))}
+.reader-modal .reader-bottom-context{max-width:760px;margin:0 auto 9px}
+.reader-modal .reader-bottom-actions{max-width:760px;margin:0 auto;grid-template-columns:140px minmax(180px,1fr) 140px}
+.reader-modal .reader-bottom-actions button{font-size:13px;min-height:44px}
+@media(max-width:980px){
+  .reader-modal{width:min(850px,calc(100vw - 30px))}
+  .reader-body{grid-template-columns:minmax(0,1fr)}
+  .reader-toc{display:none}
+  .reader-body .reader{max-width:760px;padding:36px 42px 56px}
+}
+@media(max-width:640px){
+  .reader-modal{width:100vw;height:100dvh;max-height:100dvh;border:0;border-radius:0}
+  .reader-modal .drawer-top{padding:10px 17px;min-height:55px}
+  .reader-body .reader{padding:24px 19px 42px}
+  .reader-modal .reader-bottom{padding:9px 11px calc(10px + env(safe-area-inset-bottom,0px))}
+  .reader-modal .reader-bottom-actions{grid-template-columns:68px minmax(0,1fr) 68px;gap:7px}
+  .reader-modal .reader-bottom-actions button{font-size:11px;min-height:44px;padding:8px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+  .reader-modal{animation:none}
+  .reader-reading-progress span{transition:none}
+}

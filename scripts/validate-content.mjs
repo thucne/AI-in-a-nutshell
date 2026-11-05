@@ -45,6 +45,17 @@ for (const event of data.timeline) assert(topicIds.has(event.topic), 'Broken tim
 const html = read('dist/index.html');
 assert(html.includes('data:image/svg+xml,'), 'Standalone logo missing');
 assert(html.includes('reader-bottom-actions'), 'Reader navigation missing');
+assert(html.includes('reader-modal'), 'Centered reading modal missing');
+assert(html.includes('reader-toc-links'), 'Reader table of contents missing');
+const appSource = read('assets/app.js');
+const styleSource = read('assets/styles.css');
+assert(appSource.includes('data-reader-jump'), 'Table of contents click handler missing');
+assert(appSource.includes('readerToc(t,seq)'), 'Table of contents not integrated');
+assert(appSource.includes('aria-labelledby="reader-title"'), 'Reader dialog label missing');
+assert(appSource.includes('if(changePage)window.scrollTo'), 'Background scroll preservation missing');
+assert(styleSource.includes('left:50%;top:50%;right:auto;bottom:auto;'), 'Centered dialog CSS missing');
+assert(styleSource.includes('grid-template-columns:minmax(0,1fr) 248px'), 'Desktop content rail missing');
+assert(styleSource.includes('.reader-toc{display:none}'), 'Compact viewport reader rule missing');
 assert(html.includes('THUCDE.DEV / AI ATLAS'), 'Branding missing');
 assert(!html.includes('src="content/'), 'Standalone chapter script not inlined');
 assert(!html.includes('href="assets/'), 'Standalone CSS not inlined');

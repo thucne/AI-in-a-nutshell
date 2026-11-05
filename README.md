@@ -14,7 +14,7 @@ A Vietnamese-language, interactive AI field guide built for software engineers. 
 - **Timeline:** 15 curated milestones from 1943 through the current era, cross-linked to related topics. This is a selection, not a comprehensive history.
 - **Learning paths:** Engineer-first, Inside-out LLM, History-first.
 - **Mini labs:** softmax temperature, illustrative attention weights, simulated agent orchestration loop.
-- **Reader:** 40 original chapters with variable-depth sections (narrative, steps, code, comparisons, reflection), primary references, and a fixed **Previous / Mark learned / Next** action bar. Navigation follows the selected learning path where possible, otherwise the same topic collection.
+- **Reader:** 40 authored chapters with variable-depth sections (narrative, steps, code, comparisons, reflection), primary references and a fixed **Previous / Mark learned / Next** action bar. Lessons open in a **centered, spacious modal** with a clickable table of contents on desktop, while mobile uses a full-screen reading layout. Navigation follows the selected learning path where possible, otherwise the same topic collection.
 - **Progress:** local-only `localStorage` (per browser/device); supports dark/light appearance.
 
 ## Edit / extend content (v1.1)
